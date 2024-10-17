@@ -12,11 +12,10 @@ import datetime
 
 
 class BlinkDetector:
-    def __init__(self, shape_predictor_path):
-        # Initialize constants and variables
-        self.EYE_AR_THRESH = 0.25
-        self.EYE_AR_CONSEC_FRAMES_MIN = 2
-        self.EYE_AR_CONSEC_FRAMES_MAX = 5
+    def __init__(self, shape_predictor_path, ear_threshold=0.25, ear_consec_frames_min=2, ear_consec_frames_max=5):
+        self.EYE_AR_THRESH = ear_threshold
+        self.EYE_AR_CONSEC_FRAMES_MIN = ear_consec_frames_min
+        self.EYE_AR_CONSEC_FRAMES_MAX = ear_consec_frames_max
         self.counter = 0
         self.totalBlinks = 0
         self.lock = threading.Lock()

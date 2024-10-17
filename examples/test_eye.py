@@ -3,7 +3,7 @@ project @ SitBlinkSip
 created @ 2024-10-17
 author  @ github/ishworrsubedii
 """
-
+import configparser
 import os
 import cv2
 import time
@@ -12,6 +12,15 @@ from datetime import datetime
 
 from src.services.database.csv_data_save import CSVDatabase
 from src.services.eye_blink_service.eye_blink import BlinkDetector
+from src.utils.utils import send_blink_warning_notification
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+shape_predictor_path = config['blink_detector']['shape_predictor_path']
+ear_threshold = float(config['blink_detector']['ear_threshold'])
+ear_consec_frames_min = int(config['blink_detector']['ear_consec_frames_min'])
+ear_consec_frames_max = int(config['blink_detector']['ear_consec_frames_max'])
 
 
 class FrameProcessor:
@@ -23,7 +32,13 @@ class FrameProcessor:
         :param output_folder: Folder where frames will be saved.
         :param video_source: Video source (0 for webcam, or file path for a video).
         """
-        self.blink_detector = BlinkDetector(blink_detector_model_path)
+
+        self.blink_detector = BlinkDetector(
+            shape_predictor_path=shape_predictor_path,
+            ear_threshold=ear_threshold,
+            ear_consec_frames_min=ear_consec_frames_min,
+            ear_consec_frames_max=ear_consec_frames_max
+        )
 
         # Clean up output folder if it exists
         if os.path.exists(output_folder):
@@ -71,9 +86,11 @@ class FrameProcessor:
             if (current_time - self.minute_start_time).total_seconds() >= 60:
                 if self.blinks_in_current_minute < 20:
                     print("\n" + "!" * 50)
-                    print(
-                        f"WARNING: Only {self.blinks_in_current_minute} blinks in the last minute! (Recommended: 20+)")
+                    warning_msg = f"WARNING: Only {self.blinks_in_current_minute} blinks in the last minute! (Recommended: 20+)"
+                    print(warning_msg)
                     print("!" * 50 + "\n")
+                    send_blink_warning_notification(
+                        message=warning_msg)
 
                 self.minute_start_time = current_time
                 self.blinks_in_current_minute = 0
@@ -93,7 +110,7 @@ class FrameProcessor:
 
                     if ear < 0.2 and self.last_ear >= 0.2:  # Blink started
                         self.blink_detected = True
-                    elif ear >= 0.2 and self.last_ear < 0.2 and self.blink_detected:  # Blink completed
+                    elif ear >= 0.2 and self.last_ear < 0.2 and self.blink_detected:
                         current_time = datetime.now()
                         self.csv_db.insert_record({
                             'id': current_time.strftime("%Y%m%d_%H%M%S_%f"),
@@ -148,7 +165,6 @@ class FrameProcessor:
             # Cleanup
             self.stop_event.set()
             self.video_stream.release()
-            cv2.destroyAllWindows()
             print("\nProgram terminated.")
 
 
@@ -157,5 +173,4 @@ if __name__ == "__main__":
         "resources/dlib_models/shape_predictor_68_face_landmarks.dat",
         "outputs/saved_frames"
     )
-
     processor.start()
