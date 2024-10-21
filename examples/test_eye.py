@@ -61,20 +61,7 @@ class FrameProcessor:
         if not os.path.exists(self.output_folder):
             os.makedirs(self.output_folder)
 
-    def save_frames(self):
-        """Thread to capture and save frames from the video stream."""
-        while not self.stop_event.is_set():
-            ret, frame = self.video_stream.read()
 
-            if not ret:
-                print("Failed to grab frame or end of stream.")
-                break
-
-            # Create a timestamp-based filename
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-            filename = f"{timestamp}.png"
-
-            cv2.imwrite(os.path.join(self.output_folder, filename), frame)
 
     def process_saved_frames(self):
         """Thread to process saved frames using the blink detector and delete them after processing."""
