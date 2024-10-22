@@ -3,12 +3,11 @@ project @ SitBlinkSip
 created @ 2024-10-17
 author  @ github/ishworrsubedii
 """
-import threading
+import numpy as np
 from scipy.spatial import distance as dist
 from imutils import face_utils
 import cv2
 import dlib
-import datetime
 
 
 class BlinkDetector:
@@ -17,9 +16,6 @@ class BlinkDetector:
         self.EYE_AR_CONSEC_FRAMES_MIN = ear_consec_frames_min
         self.EYE_AR_CONSEC_FRAMES_MAX = ear_consec_frames_max
         self.counter = 0
-        self.totalBlinks = 0
-        self.lock = threading.Lock()
-        self.timediff = datetime.datetime.now()
         self.ear = None
 
         self.detector = dlib.get_frontal_face_detector()
@@ -49,7 +45,6 @@ class BlinkDetector:
             leftEAR = self.eye_aspect_ratio(leftEye)
             rightEAR = self.eye_aspect_ratio(rightEye)
 
-            # Draw the convex hull around both eyes
             cv2.drawContours(frame, [cv2.convexHull(leftEye)], -1, (0, 255, 0), 1)
             cv2.drawContours(frame, [cv2.convexHull(rightEye)], -1, (0, 255, 0), 1)
 
@@ -57,20 +52,23 @@ class BlinkDetector:
         return self.ear
 
     def update_blink_count(self, EAR):
-        """Update blink count based on the current EAR."""
         if EAR < self.EYE_AR_THRESH:
             self.counter += 1
         else:
             if self.EYE_AR_CONSEC_FRAMES_MIN <= self.counter <= self.EYE_AR_CONSEC_FRAMES_MAX:
-                self.totalBlinks += 1
+                self.counter = 0
+                return True
             self.counter = 0
+        return False
 
     def process_frame(self, frame):
         if frame is None:
-            return None
+            return None, None, False
         frame = cv2.resize(frame, (700, 500))
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         EAR = self.calculate_ear(frame, gray)
 
-        return frame, self.totalBlinks, EAR
+        blink_occurred = self.update_blink_count(EAR)
+
+        return frame, EAR, blink_occurred
