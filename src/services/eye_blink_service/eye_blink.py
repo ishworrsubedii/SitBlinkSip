@@ -3,7 +3,8 @@ project @ SitBlinkSip
 created @ 2024-10-17
 author  @ github/ishworrsubedii
 """
-import numpy as np
+import time
+
 from scipy.spatial import distance as dist
 from imutils import face_utils
 import cv2

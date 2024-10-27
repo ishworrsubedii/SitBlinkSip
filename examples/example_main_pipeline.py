@@ -8,10 +8,10 @@ import cv2
 from src.pipeline.main_pipeline import SitBlinkSipPipeline
 
 if __name__ == '__main__':
-    pipeline = SitBlinkSipPipeline(display=False, hash_threshold=0)
+    pipeline = SitBlinkSipPipeline(display=False, hash_threshold=0.010)
 
     try:
-        pipeline.start_pipeline()
+        pipeline.start_pipeline(posture=True, eye_blink=True)
 
         while not pipeline.stop_event.is_set():
             pass

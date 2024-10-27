@@ -69,6 +69,7 @@ class PostureDetector:
 
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
+        image = cv2.resize(image, (700, 500))
 
         results = self.pose.process(image)
 
@@ -129,15 +130,7 @@ class PostureDetector:
         else:
             pass
 
-        # Prepare posture data
-        posture_data = {
-            'head_tilt': head_tilt,
-            'displacement_ratio': displacement_ratio,
-            'posture_status': posture_status,
-            'landmarks': landmarks_dict
-        }
-
-        return image, posture_data
+        return image, head_tilt, displacement_ratio, posture_status
 
     def _draw_visualization(self, image, landmarks, head_tilt, displacement_ratio,
                             posture_status, color):
@@ -159,5 +152,5 @@ class PostureDetector:
         cv2.putText(image, posture_status, (10, 90),
                     self.font, 0.9, color, 2)
 
-    def __del__(self):
+    def __del__(self):  # Destructor
         self.pose.close()

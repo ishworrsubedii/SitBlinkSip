@@ -22,3 +22,8 @@ class FrameCaptureSave:
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
         cv2.imwrite(os.path.join(output_folder, filename), frame)
+
+    def release(self):
+        """Release the video capture resource"""
+        if self.video_stream.isOpened():
+            self.video_stream.release()

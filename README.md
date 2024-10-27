@@ -1,21 +1,26 @@
 # SitBlinkSip
 
-SitBlinkSip is a health-focused application designed to help developers and individuals who spend extended hours in front of a computer. This app monitors your body posture, tracks eye blinking patterns, and reminds you to take water breaks, promoting overall well-being during long work sessions.
+SitBlinkSip is a health-focused application designed to help developers and individuals who spend extended hours in
+front of a computer. This app monitors your body posture, tracks eye blinking patterns, and reminds you to take water
+breaks, promoting overall well-being during long work sessions.
 
 ## Problem Statement
 
-Many developers and tech workers often forget to take care of their health while immersed in work. Common issues include:
+Many developers and tech workers often forget to take care of their health while immersed in work. Common issues
+include:
 
 - **Poor posture** leading to back and neck pain.
 - **Eye strain** and dryness due to a lack of blinking.
 - **Dehydration** from forgetting to take water breaks.
 
-The goal of SitBlinkSip is to tackle these issues by providing timely reminders and real-time monitoring to ensure a healthy work routine.
+The goal of SitBlinkSip is to tackle these issues by providing timely reminders and real-time monitoring to ensure a
+healthy work routine.
 
 ## Features
 
 - **Real-time Posture Monitoring**: Detects improper posture (slouching or leaning) and alerts users to sit correctly.
-- **Eye Blink Detection**: Monitors eye blinking, sending a notification if no blink is detected for over 60 seconds to prevent dry eyes.
+- **Eye Blink Detection**: Monitors eye blinking, sending a notification if no blink is detected for over 60 seconds to
+  prevent dry eyes.
 - **Water Break Reminders**: Sends periodic notifications to ensure users stay hydrated.
 
 ## Objectives
@@ -34,10 +39,43 @@ The goal of SitBlinkSip is to tackle these issues by providing timely reminders 
 To get started with SitBlinkSip, follow these steps:
 
 1. Clone the repository.
+
+      ```angular2html
+        git clone https://github.com/ishworrsubedii/SitBlinkSip.git
+      
+      ```
+
 2. Install the required dependencies.
+    ```angular2html
+   pip install -r requirements.txt
+    
+    ```
 3. Run the application.
+    ```angular2html
+   python main.py
+    
+    ```
+4. Open the application in your browser.
+
+    ```angular2html
+   localhost:8000
+    
+    ```
+
+## Fastapi UI
+
+![img.png](demo/img.png)
+
+## Author Information
+
+- **Email**: [ishworr.subedi@gmail.com](mailto:ishworr.subedi@gmail.com)
+- **GitHub**: [ishworrsubedii](https://github.com/ishworrsubedii)
+- **LinkedIn**: [linkedin.com/in/ishworrsubedii](https://www.linkedin.com/in/ishworrsubedii/)
+- **Twitter**: [@ishworr_](https://x.com/ishworr_)
+- **Portfolio**: [ishwor-subedi.com.np](https://ishwor-subedi.com.np/)
 
 For detailed setup instructions, visit our [Open Source Guidelines](./CONTRIBUTING.md).
+
 
 ---
 

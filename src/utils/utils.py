@@ -5,6 +5,7 @@ author  @ github/ishworrsubedii
 """
 import configparser
 import subprocess
+import shutil
 
 
 def send_blink_warning_notification(message):
@@ -12,7 +13,7 @@ def send_blink_warning_notification(message):
     message = message
 
     subprocess.run(["notify-send", title, message])
-    sound_file = "/usr/share/sounds/Yaru/stereo/complete.oga"  # Default message sound
+    sound_file = "resources/alerts/blink.mp3"
     subprocess.run(["paplay", sound_file])
 
 
@@ -21,3 +22,11 @@ def config_reader():
     config.read('config.ini')
 
     return config
+
+
+def del_directory(directory_path):
+    shutil.rmtree(directory_path)
+
+
+def move_file(file_path, destination_path):
+    shutil.move(file_path, destination_path)

@@ -16,9 +16,9 @@ if __name__ == '__main__':
         if not ret:
             break
 
-        processed_frame, posture_data = posture_system.process_frame(frame)
+        image, head_tilt, displacement_ratio, posture_status = posture_system.process_frame(frame)
 
-        cv2.imshow('Posture Detection', processed_frame)
+        cv2.imshow('Posture Detection', image)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
