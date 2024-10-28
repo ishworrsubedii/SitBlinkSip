@@ -12,15 +12,15 @@ from fastapi.routing import APIRouter
 from src.models.models import initialize_database
 from src.pipeline.main_pipeline import SitBlinkSipPipeline
 
-pipeline = SitBlinkSipPipeline(display=False, hash_threshold=0.010)
+pipeline = SitBlinkSipPipeline(display=False, hash_threshold=0)
 db = initialize_database()
 sitblink = APIRouter(prefix="/sitblink", tags=["SitBlink"])
 
 
 @sitblink.post("/start_pipeline")
-async def start_pipeline(video_source: str = File(...)):
+async def start_pipeline(video_source: str = File(...), posture: bool = True, eye_blink: bool = True) -> Any:
     try:
-        pipeline.start_pipeline(posture=True, eye_blink=True, video_source=video_source)
+        pipeline.start_pipeline(posture=posture, eye_blink=eye_blink, video_source=video_source)
         pipeline.stop_event.is_set()
 
         return {"message": "Pipeline started successfully"}

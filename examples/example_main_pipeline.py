@@ -8,7 +8,7 @@ import cv2
 from src.pipeline.main_pipeline import SitBlinkSipPipeline
 
 if __name__ == '__main__':
-    pipeline = SitBlinkSipPipeline(display=False, hash_threshold=0.010)
+    pipeline = SitBlinkSipPipeline(display=False, hash_threshold=0.01)
 
     try:
         pipeline.start_pipeline(posture=True, eye_blink=True)

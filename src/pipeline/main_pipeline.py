@@ -195,6 +195,7 @@ class SitBlinkSipPipeline:
                                 break
                         if not self.posture_detection_alive:
                             processed_files.add(file)
+                            time.sleep(0.1)
                             os.remove(file_path)
                         else:
                             move_file(file_path, posture_det_dir)
