@@ -1,0 +1,35 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer Circle -->
+  <circle cx="60" cy="60" r="55" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8 8">
+    <animateTransform
+      attributeName="transform"
+      type="rotate"
+      from="0 60 60"
+      to="360 60 60"
+      dur="8s"
+      repeatCount="indefinite"
+    />
+  </circle>
+  
+  <!-- Eye Icon -->
+  <g transform="translate(30, 45)">
+    <path d="M30 5C17.636 5 8 30 8 30S17.636 55 30 55C42.364 55 52 30 52 30S42.364 5 30 5Z" 
+      stroke="#3B82F6" 
+      stroke-width="3" 
+      stroke-linecap="round" 
+      stroke-linejoin="round"
+    />
+    <circle cx="30" cy="30" r="10" 
+      stroke="#3B82F6" 
+      stroke-width="3" 
+      fill="none"
+    >
+      <animate
+        attributeName="r"
+        values="10;8;10"
+        dur="2s"
+        repeatCount="indefinite"
+      />
+    </circle>
+  </g>
+</svg>
