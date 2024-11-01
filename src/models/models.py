@@ -15,6 +15,8 @@ class SitBlinkSipDB:
         self.db_name = db_name
         self.connection = None
         self.cursor = None
+        self.sip_db = "data/sip.db"
+
         self.lock = threading.Lock()  # For concurrency when accessing database
 
     def initialize(self):
@@ -107,39 +109,33 @@ class SitBlinkSipDB:
             ''')
             return self.cursor.fetchall()
 
+    def initialize_database(self):
+        conn = sqlite3.connect(self.sip_db)
+        cursor = conn.cursor()
+        cursor.execute('''
+               CREATE TABLE IF NOT EXISTS intervals (
+                   id INTEGER PRIMARY KEY,
+                   interval INTEGER NOT NULL,
+                   start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+               )
+           ''')
+        cursor.execute('''
+               CREATE TABLE IF NOT EXISTS notifications (
+                   id INTEGER PRIMARY KEY,
+                   notification_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+               )
+           ''')
+        conn.commit()
+        conn.close()
+
     def close(self):
         """Close database connection"""
         if self.connection:
             self.connection.close()
 
 
-class SipDB:
-    def __init__(self):
-        self.sip_db = "data/sip.db"
-
-    def initialize_database(self):
-        conn = sqlite3.connect(self.sip_db)
-        cursor = conn.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS intervals (
-                id INTEGER PRIMARY KEY,
-                interval INTEGER NOT NULL,
-                start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS notifications (
-                id INTEGER PRIMARY KEY,
-                notification_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        conn.commit()
-        conn.close()
-
-
 def initialize_database():
     db = SitBlinkSipDB()
-    sdb = SipDB()
     db.initialize()
-    sdb.initialize_database()
+    db.initialize_database()
     return db
