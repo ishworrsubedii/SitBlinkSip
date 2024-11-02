@@ -1,8 +1,12 @@
 import Link from "next/link";
 
-export default function Logo() {
+interface LogoProps {
+  className?: string;
+}
+
+const Logo: React.FC<LogoProps> = ({ className }) => {
   return (
-    <Link href="/" className="inline-flex" aria-label="Sitblink">
+    <Link href="/" className={`inline-flex ${className}`} aria-label="Sitblink">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
         <circle 
           cx="16" 
@@ -29,3 +33,5 @@ export default function Logo() {
     </Link>
   );
 }
+
+export default Logo;

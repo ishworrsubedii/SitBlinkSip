@@ -7,3 +7,30 @@
 @import "additional-styles/theme.css";
 
 @import "tailwindcss/utilities";
+
+/* Add these custom styles */
+.sidebar-tooltip {
+  @apply invisible absolute left-full top-1/2 ml-2 -translate-y-1/2 rounded-md 
+         bg-gray-800 px-2 py-1 text-xs text-white opacity-0 shadow-lg 
+         transition-all group-hover:visible group-hover:opacity-100;
+}
+
+/* Optional: Add a fade animation for the tooltips */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.group:hover .sidebar-tooltip {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.sidebar-active-indicator {
+  @apply absolute -left-3 top-1/2 h-1.5 w-1.5 -translate-y-1/2 
+         rounded-full bg-blue-600 transition-all;
+}
+
+.sidebar-hover-indicator {
+  @apply absolute right-0 top-1/2 h-6 w-1 -translate-y-1/2 
+         rounded-l-full transition-all group-hover:bg-blue-600/50;
+}

@@ -8,9 +8,9 @@ from datetime import datetime
 import asyncio
 import sqlite3
 
-sip_router = APIRouter(prefix="/sip", tags=["SIP"])
+sip_db = "sip.db"
 
-sip_db = "data/sip.db"
+sip_router = APIRouter(prefix="/sip", tags=["SIP"])
 
 
 async def send_water_notification(interval):
