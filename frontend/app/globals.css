@@ -82,4 +82,11 @@
     @apply bg-background text-foreground;
     }
 }
-  
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgb(var(--foreground) / 0.1);
+}
+
+.recharts-tooltip-cursor {
+  stroke: rgb(var(--foreground) / 0.2);
+}

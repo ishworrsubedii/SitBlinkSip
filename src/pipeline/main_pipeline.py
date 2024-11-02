@@ -18,12 +18,14 @@ ear_threshold = float(config['blink_detector']['ear_threshold'])
 ear_consec_frames_min = int(config['blink_detector']['ear_consec_frames_min'])
 ear_consec_frames_max = int(config['blink_detector']['ear_consec_frames_max'])
 
-eye_blink_det_dir = "outputs/eye_blink_frames"
-posture_det_dir = "outputs/posture_det_frames"
+eye_blink_det_dir = config['frame_save']['eye_blink_det_dir']
+posture_det_dir = config['frame_save']['posture_det_dir']
 
 
 class SitBlinkSipPipeline:
     def __init__(self):
+        self.eye_blink = None
+        self.posture = None
         self.video_source = 0
 
         self.blink_detector = BlinkDetector(
