@@ -4,9 +4,9 @@ import { AppSidebar } from "@/components/AppSidebar"
 export default function DemoLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen">
+      <div className="flex h-screen overflow-hidden">
         <AppSidebar />
-        <main className="flex-1">
+        <main className="flex-1 w-full overflow-y-auto">
           {children}
         </main>
       </div>
