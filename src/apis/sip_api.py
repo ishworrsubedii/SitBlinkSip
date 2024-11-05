@@ -10,7 +10,7 @@ import sqlite3
 
 sip_db = "sip.db"
 
-sip_router = APIRouter(prefix="/sip", tags=["SIP"])
+sip_router = APIRouter(tags=["SIP"])
 
 
 async def send_water_notification(interval):

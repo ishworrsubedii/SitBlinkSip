@@ -24,7 +24,7 @@ from src.utils.utils import config_reader
 
 pipeline = SitBlinkSipPipeline()
 db = initialize_database()
-sit_blink_router = APIRouter(prefix="/sitblink", tags=["SitBlink"])
+sit_blink_router = APIRouter( tags=["SitBlink"])
 
 config = config_reader()
 
