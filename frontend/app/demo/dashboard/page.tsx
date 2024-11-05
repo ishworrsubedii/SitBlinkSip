@@ -155,7 +155,7 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="w-full space-y-6 p-6">
+    <div className="w-full p-6">
       {/* Top Stats Section */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="bg-primary/5">

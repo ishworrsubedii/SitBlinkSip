@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import DashboardPage from "./dashboard/page";
 import WellnessMonitor from "./services/page";
+import AnalyticsPage from "./analytics/page";
 
 export default function DemoPage() {
   const searchParams = useSearchParams();
@@ -12,6 +13,7 @@ export default function DemoPage() {
     <div className="flex-1 w-full h-full overflow-y-auto">
       {view === "dashboard" && <DashboardPage />}
       {view === "services" && <WellnessMonitor />}
+      {view === "analytics" && <AnalyticsPage />}
     </div>
   );
 }
