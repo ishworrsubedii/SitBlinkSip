@@ -14,6 +14,7 @@ import numpy as np
 from PIL import Image
 from fastapi.routing import APIRouter
 from fastapi import WebSocket
+from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
 from src.models.models import initialize_database
@@ -24,13 +25,19 @@ from src.utils.utils import config_reader
 
 pipeline = SitBlinkSipPipeline()
 db = initialize_database()
-sit_blink_router = APIRouter( tags=["SitBlink"])
+sit_blink_router = APIRouter(tags=["SitBlink"])
 
 config = config_reader()
 
 eye_blink_det_dir = config['frame_save']['eye_blink_det_dir']
 posture_det_dir = config['frame_save']['posture_det_dir']
 output_dir = config['frame_save']['output_dir']
+
+
+class StreamRequest(BaseModel):
+    posture: bool = False
+    eye_blink: bool = False
+
 
 active_connections = set()
 
@@ -170,11 +177,11 @@ async def generate_frames(posture: bool, eye_blink: bool):
 
 
 @sit_blink_router.post("/start_sitblink_stream")
-async def eye_blink_stream(posture: bool = False, eye_blink: bool = False):
-    pipeline.validate(posture=posture, eye_blink=eye_blink)
+async def eye_blink_stream(request: StreamRequest):
+    pipeline.validate(posture=request.posture, eye_blink=request.eye_blink)
 
     return StreamingResponse(
-        generate_frames(posture, eye_blink),
+        generate_frames(request.posture, request.eye_blink),
         media_type="text/event-stream"
     )
 

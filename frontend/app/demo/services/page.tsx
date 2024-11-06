@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import useWebSocket from 'react-use-websocket';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -9,15 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Camera, Eye, ShieldCheck, Waves, Video, Play, Square, Settings, Loader2, Brain, AlertCircle } from 'lucide-react';
+import { Camera, Eye, ShieldCheck, Waves, Video, Play, Square, Settings, Loader2, Brain, AlertCircle, Activity } from 'lucide-react';
 import { API_URL, WS_URL } from '@/lib/constants';
 import { apiClient, ApiError } from '@/lib/api-client';
-
-// Add this type for better error handling
-type ApiError = {
-  message: string;
-  status?: number;
-};
 
 const WellnessMonitor = () => {
   // Camera states
@@ -29,19 +22,32 @@ const WellnessMonitor = () => {
 
   // Monitoring states
   const [isStreaming, setIsStreaming] = useState(false);
-  const [monitorPosture, setMonitorPosture] = useState(true);
-  const [monitorEyeBlink, setMonitorEyeBlink] = useState(true);
+  const [monitorPosture, setMonitorPosture] = useState(false);
+  const [monitorEyeBlink, setMonitorEyeBlink] = useState(false);
   const [imageData, setImageData] = useState<string | null>(null);
   const [waterBreakInterval, setWaterBreakInterval] = useState(30);
   const [isWaterBreakActive, setIsWaterBreakActive] = useState(false);
 
+  // Add these state variables near the other state declarations
+  const [startPosture, setStartPosture] = useState(true);
+  const [startEyeBlink, setStartEyeBlink] = useState(true);
+
+  // Add these state variables for frame capture settings
+  const [framePosture, setFramePosture] = useState(false);
+  const [frameEyeBlink, setFrameEyeBlink] = useState(false);
+
+  // Add these state variables for pipeline settings
+  const [pipelinePosture, setPipelinePosture] = useState(false);
+  const [pipelineEyeBlink, setPipelineEyeBlink] = useState(false);
+
+  // Replace isStreaming with isPipelineActive
+  // Replace isStreaming with isPipelineActive/
+  const [isPipelineActive, setIsPipelineActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   // WebSocket connection
-  const { sendMessage, lastMessage } = useWebSocket(
-    `${WS_URL}/ws?posture=${monitorPosture}&eye_blink=${monitorEyeBlink}`,
-    {
-      shouldReconnect: () => isStreaming,
-    }
-  );
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [lastMessage, setLastMessage] = useState<MessageEvent | null>(null);
 
   // Get available cameras
   useEffect(() => {
@@ -76,11 +82,8 @@ const WellnessMonitor = () => {
         setIsCameraActive(false);
     } else {
         try {
-            setIsInitializing(true); // Start loading state
+            setIsInitializing(true);
             setIsCameraActive(true);
-            
-            // Add 1 second delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
             
             console.log('Attempting to access camera...');
             const stream = await navigator.mediaDevices.getUserMedia({
@@ -94,24 +97,21 @@ const WellnessMonitor = () => {
             if (videoRef.current) {
                 console.log('Setting video source...');
                 videoRef.current.srcObject = stream;
-                videoRef.current.onloadedmetadata = () => {
-                    console.log('Video metadata loaded');
-                    videoRef.current?.play()
-                        .then(() => {
-                            console.log('Video playback started');
-                            setIsInitializing(false); // Stop loading state
-                        })
-                        .catch(err => console.error('Error playing video:', err));
-                };
-            } else {
-                console.error('Video element not found');
-                setIsCameraActive(false);
-                setIsInitializing(false);
+                // Wait for video to be ready
+                await new Promise((resolve) => {
+                    videoRef.current!.onloadedmetadata = () => {
+                        videoRef.current!.play()
+                            .then(resolve)
+                            .catch(err => console.error('Error playing video:', err));
+                    };
+                });
+                console.log('Video ready for capture');
             }
         } catch (error) {
             console.error('Error accessing the camera:', error);
             toast.error('Failed to start camera preview');
             setIsCameraActive(false);
+        } finally {
             setIsInitializing(false);
         }
     }
@@ -131,34 +131,84 @@ const WellnessMonitor = () => {
   // Handle stream control
   const toggleStream = async () => {
     if (!selectedCamera) {
-      toast.error('Please select a camera first');
-      return;
+        toast.error('Please select a camera first');
+        return;
     }
 
-    const endpoint = isStreaming ? 'stop_sitblink_stream' : 'start_sitblink_stream';
-    setIsLoading(true);
-    
-    try {
-      await apiClient.fetch(endpoint, {
-        method: 'POST',
-        body: {
-          posture: monitorPosture,
-          eye_blink: monitorEyeBlink
-        },
-      });
+    if (!monitorPosture && !monitorEyeBlink) {
+        toast.error('Please enable at least one monitoring option');
+        return;
+    }
 
-      setIsStreaming(!isStreaming);
-      toast.success(isStreaming ? 'Frame capture stopped' : 'Frame capture started');
-      
-    } catch (error) {
-      console.error('Stream toggle error:', error);
-      if (error instanceof ApiError) {
-        toast.error(error.message);
-      } else {
-        toast.error('An unexpected error occurred. Please try again.');
-      }
-    } finally {
-      setIsLoading(false);
+    if (!isStreaming) {
+        // Ensure camera is active before starting stream
+        if (!isCameraActive) {
+            toast.error('Please start camera preview first');
+            return;
+        }
+
+        console.log('Starting stream...');
+        const newWs = new WebSocket(`${WS_URL}/ws?posture=${monitorPosture}&eye_blink=${monitorEyeBlink}`);
+        
+        // Wait for WebSocket to connect before starting capture
+        await new Promise((resolve, reject) => {
+            newWs.onopen = () => {
+                console.log('WebSocket connected successfully');
+                toast.success('Connected to server');
+                resolve(true);
+            };
+            newWs.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                reject(error);
+            };
+            setTimeout(() => reject(new Error('WebSocket connection timeout')), 5000);
+        });
+
+        setWs(newWs);
+        
+        const frameInterval = setInterval(() => {
+            if (!videoRef.current || !newWs || newWs.readyState !== WebSocket.OPEN) {
+                console.log('Checking video status:', {
+                    videoReady: !!videoRef.current,
+                    videoPlaying: videoRef.current?.readyState === 4,
+                    wsState: newWs?.readyState
+                });
+                return;
+            }
+
+            console.log('Capturing frame...');
+            const canvas = document.createElement('canvas');
+            canvas.width = videoRef.current.videoWidth || 640;
+            canvas.height = videoRef.current.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            
+            if (!ctx) {
+                console.error('Failed to get canvas context');
+                return;
+            }
+
+            try {
+                ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob(
+                    (blob) => {
+                        if (blob && newWs.readyState === WebSocket.OPEN) {
+                            console.log('Sending frame, size:', blob.size, 'bytes');
+                            newWs.send(blob);
+                        }
+                    },
+                    'image/jpeg',
+                    0.5
+                );
+            } catch (error) {
+                console.error('Error capturing/sending frame:', error);
+            }
+        }, 1000 / 10);
+
+        setFrameIntervalId(frameInterval);
+        setIsStreaming(true);
+        console.log('Stream started');
+    } else {
+        stopStreaming();
     }
 };
 
@@ -166,7 +216,7 @@ const WellnessMonitor = () => {
   const toggleWaterBreakNotifications = async () => {
     try {
       if (!isWaterBreakActive) {
-        await fetch(`${API_URL}/sip/set_water_break_interval`, {
+        await fetch(`${API_URL}/set_water_break_interval`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ interval_minutes: waterBreakInterval }),
@@ -199,7 +249,6 @@ const WellnessMonitor = () => {
     }
   }, [lastMessage]);
 
-  const [isLoading, setIsLoading] = useState(false);
   const [backendStatus, setBackendStatus] = useState('Not Checked');
   const checkBackendStatus = async () => {
     try {
@@ -224,8 +273,209 @@ const WellnessMonitor = () => {
   // Add a new state for loading
   const [isInitializing, setIsInitializing] = useState(false);
 
+
+
+  // Pipeline control function
+  const togglePipeline = async () => {
+    if (!selectedCamera) {
+      toast.error('Please select a camera first');
+      return;
+    }
+
+    if (!monitorPosture && !monitorEyeBlink) {
+      toast.error('Please enable at least one monitoring option (Posture or Eye Blink)');
+      return;
+    }
+
+    const endpoint = isPipelineActive ? 'stop_sitblink_stream' : 'start_sitblink_stream';
+    setIsLoading(true);
+    
+    try {
+      await apiClient.fetch(endpoint, {
+        method: 'POST',
+        body: {
+          posture: monitorPosture,
+          eye_blink: monitorEyeBlink
+        },
+      });
+
+      setIsPipelineActive(!isPipelineActive);
+      toast.success(isPipelineActive ? 'Pipeline stopped' : 'Pipeline started');
+      
+    } catch (error) {
+      console.error('Pipeline toggle error:', error);
+      if (error instanceof ApiError) {
+        toast.error(error.message);
+      } else {
+        toast.error('An unexpected error occurred. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Add this function to handle stopping the stream
+  const stopStreaming = () => {
+    console.log('Stopping stream...');
+    setIsStreaming(false);
+    if (frameIntervalId) {
+      clearInterval(frameIntervalId);
+      setFrameIntervalId(null);
+    }
+    if (ws) {
+      ws.close();
+      setWs(null);
+    }
+    console.log('Stream stopped');
+  };
+
+  // Add these state variables
+  const [frameIntervalId, setFrameIntervalId] = useState<NodeJS.Timeout | null>(null);
+  const [eventSource, setEventSource] = useState<EventSource | null>(null);
+  const [eyeBlinkFrame, setEyeBlinkFrame] = useState<string | null>(null);
+  const [postureFrame, setPostureFrame] = useState<string | null>(null);
+
+  // Add cleanup effect
+  useEffect(() => {
+    return () => {
+      if (frameIntervalId) {
+        clearInterval(frameIntervalId);
+      }
+      if (eventSource) {
+        eventSource.close();
+      }
+    };
+  }, [frameIntervalId, eventSource]);
+
+  // Add WebSocket setup function
+  const setupWebSocket = () => {
+    const newWs = new WebSocket(`${WS_URL}/ws?posture=${monitorPosture}&eye_blink=${monitorEyeBlink}`);
+
+    newWs.onopen = () => {
+      console.log('WebSocket connected');
+      toast.success('Connected to server');
+    };
+
+    newWs.onclose = () => {
+      console.log('WebSocket disconnected');
+      stopStreaming();
+    };
+
+    newWs.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      stopStreaming();
+    };
+
+    newWs.onmessage = (event) => {
+      setLastMessage(event);
+    };
+
+    setWs(newWs);
+    return newWs;
+  };
+
   return (
     <div className="container mx-auto space-y-6 p-6">
+      {/* Monitoring Options Card */}
+      <Card className="backdrop-blur-sm bg-white/95 border border-purple-100">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <div className="flex items-center gap-2">
+            <Settings className="h-4 w-4 text-purple-600" />
+            <CardTitle className="text-lg font-medium">Monitoring Options</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <div className="rounded-full bg-gradient-to-br from-emerald-50 to-emerald-100 p-1.5">
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+              </div>
+              <div className="flex flex-col">
+                <Label className="text-sm font-medium text-blue-900">Posture Detection</Label>
+                <span className="text-xs text-gray-500">Monitor and alert for poor posture</span>
+              </div>
+              <Switch
+                checked={monitorPosture}
+                onCheckedChange={setMonitorPosture}
+                disabled={isStreaming}
+                className="ml-2"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="rounded-full bg-gradient-to-br from-violet-50 to-violet-100 p-1.5">
+                <Eye className="h-4 w-4 text-violet-600" />
+              </div>
+              <div className="flex flex-col">
+                <Label className="text-sm font-medium text-blue-900">Eye Blink Detection</Label>
+                <span className="text-xs text-gray-500">Monitor eye strain and blink rate</span>
+              </div>
+              <Switch
+                checked={monitorEyeBlink}
+                onCheckedChange={setMonitorEyeBlink}
+                disabled={isStreaming}
+                className="ml-2"
+              />
+            </div>
+          </div>
+          
+          {!monitorPosture && !monitorEyeBlink && (
+            <div className="mt-4 flex items-center gap-2 text-amber-600 bg-amber-50 p-2 rounded">
+              <AlertCircle className="h-4 w-4" />
+              <span className="text-sm">Please enable at least one monitoring option</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="border border-blue-100">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    <Brain className="h-4 w-4 text-blue-600" />
+                    <CardTitle className="text-sm font-medium">Monitoring Controls</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-full bg-gradient-to-br from-emerald-50 to-emerald-100 p-1.5">
+                          <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                        </div>
+                        <Label className="text-sm">Posture Detection</Label>
+                        <Switch
+                          checked={monitorPosture}
+                          onCheckedChange={setMonitorPosture}
+                          disabled={isStreaming}
+                          className="
+                            relative h-6 w-11 rounded-full border-2 border-gray-200 bg-white
+                            data-[state=checked]:border-blue-600 data-[state=checked]:bg-gradient-to-r from-blue-600 to-blue-600
+                            transition-colors duration-200
+                          "
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-full bg-gradient-to-br from-violet-50 to-violet-100 p-1.5">
+                          <Eye className="h-4 w-4 text-violet-600" />
+                        </div>
+                        <Label className="text-sm">Eye Blink Detection</Label>
+                        <Switch
+                          checked={monitorEyeBlink}
+                          onCheckedChange={setMonitorEyeBlink}
+                          disabled={isStreaming}
+                          className="
+                            relative h-6 w-11 rounded-full border-2 border-gray-200 bg-white
+                            data-[state=checked]:border-blue-600 data-[state=checked]:bg-gradient-to-r from-blue-600 to-blue-600
+                            transition-colors duration-200
+                          "
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
       {/* Camera Setup Card */}
       <Card className="backdrop-blur-sm bg-white/95 border border-blue-100">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -295,15 +545,14 @@ const WellnessMonitor = () => {
                 )}
               </Button>
             </div>
+            
 
-            {/* Preview Window */}
             {isCameraActive && (
               <div className="relative w-full overflow-hidden bg-black rounded-lg">
                 {/* Aspect ratio container */}
                 <div className="aspect-video relative">
                   {/* Video element with scaleX(-1) to flip horizontally */}
                   <video
-                    key="camera-preview"
                     ref={videoRef}
                     autoPlay
                     playsInline
@@ -313,10 +562,6 @@ const WellnessMonitor = () => {
                       transform: 'scaleX(-1)',
                       WebkitTransform: 'scaleX(-1)',
                     }}
-                    onPlay={() => console.log('Video play event fired')}
-                    onLoadedData={() => console.log('Video data loaded')}
-                    onLoadedMetadata={() => console.log('Video metadata loaded')}
-                    onError={(e) => console.error('Video error:', e)}
                   />
                   
                   {/* Loading overlay - Only show when initializing */}
@@ -348,7 +593,6 @@ const WellnessMonitor = () => {
               </div>
             )}
 
-            {/* Frame Capture Window */}
             {isStreaming && imageData && (
               <div className="aspect-video rounded-lg border overflow-hidden bg-black">
                 <img
@@ -362,68 +606,29 @@ const WellnessMonitor = () => {
         </CardContent>
       </Card>
 
-      {/* Monitoring Pipeline Card */}
-      <Card className="backdrop-blur-sm bg-white/95 border border-blue-100">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <div className="flex items-center gap-2">
-            <div className="rounded-full bg-gradient-to-br from-blue-50 to-blue-100 p-2">
-              <Brain className="h-4 w-4 text-blue-600" />
-            </div>
-            <CardTitle className="text-lg font-medium">Monitoring Pipeline</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-6">
-            {/* Posture Detection Switch */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="rounded-full bg-gradient-to-br from-emerald-50 to-emerald-100 p-1.5">
-                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                </div>
-                <div className="flex flex-col">
-                  <Label className="text-sm font-medium text-blue-900">Posture Detection</Label>
-                  <span className="text-xs text-gray-500">Monitor and alert for poor posture</span>
-                </div>
-              </div>
-              <Switch
-                checked={monitorPosture}
-                onCheckedChange={setMonitorPosture}
-                className="group relative inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-200"
-              >
-                <span
-                  className={`pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform group-hover:scale-105 ${
-                    monitorPosture ? "translate-x-5" : "translate-x-0"
-                  }`}
-                />
-              </Switch>
-            </div>
-
-            {/* Eye Blink Detection Switch */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="rounded-full bg-gradient-to-br from-violet-50 to-violet-100 p-1.5">
-                  <Eye className="h-4 w-4 text-violet-600" />
-                </div>
-                <div className="flex flex-col">
-                  <Label className="text-sm font-medium text-blue-900">Eye Blink Detection</Label>
-                  <span className="text-xs text-gray-500">Monitor eye strain and blink rate</span>
-                </div>
-              </div>
-              <Switch
-                checked={monitorEyeBlink}
-                onCheckedChange={setMonitorEyeBlink}
-                className="group relative inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-200"
-              >
-                <span
-                  className={`pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform group-hover:scale-105 ${
-                    monitorEyeBlink ? "translate-x-5" : "translate-x-0"
-                  }`}
-                />
-              </Switch>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Pipeline Control Button */}
+      <Button
+        variant={isPipelineActive ? "destructive" : "default"}
+        className="w-full"
+        onClick={togglePipeline}
+        disabled={!selectedCamera || (!monitorPosture && !monitorEyeBlink) || isLoading}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {isPipelineActive ? 'Stopping Pipeline...' : 'Starting Pipeline...'}
+          </>
+        ) : (
+          <>
+            {isPipelineActive ? (
+              <Square className="mr-2 h-4 w-4" />
+            ) : (
+              <Play className="mr-2 h-4 w-4" />
+            )}
+            {isPipelineActive ? 'Stop Pipeline' : 'Start Pipeline'}
+          </>
+        )}
+      </Button>
 
       {/* Water Break Settings Card */}
       <Card className="backdrop-blur-sm bg-white/95 border border-cyan-100">
