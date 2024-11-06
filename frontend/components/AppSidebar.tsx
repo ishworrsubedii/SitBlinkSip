@@ -45,6 +45,12 @@ export function AppSidebar() {
       description: "Overview of your health metrics"
     },
     {
+      title: "Services",
+      href: "/services",
+      Icon: Settings,
+      description: "Configure monitoring services"
+    },
+    {
       title: "Analytics",
       href: "/analytics",
       Icon: LineChart,
