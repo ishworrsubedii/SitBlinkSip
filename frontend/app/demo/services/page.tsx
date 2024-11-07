@@ -540,7 +540,7 @@ const WellnessMonitor = () => {
                 ) : (
                   <>
                     <Video className="mr-2 h-4 w-4" />
-                    {isStreaming ? 'Stop Capture' : 'Start Capture'}
+                    {isStreaming ? 'Stop Capture' : 'Start Pipeline'}
                   </>
                 )}
               </Button>
@@ -606,29 +606,7 @@ const WellnessMonitor = () => {
         </CardContent>
       </Card>
 
-      {/* Pipeline Control Button */}
-      <Button
-        variant={isPipelineActive ? "destructive" : "default"}
-        className="w-full"
-        onClick={togglePipeline}
-        disabled={!selectedCamera || (!monitorPosture && !monitorEyeBlink) || isLoading}
-      >
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {isPipelineActive ? 'Stopping Pipeline...' : 'Starting Pipeline...'}
-          </>
-        ) : (
-          <>
-            {isPipelineActive ? (
-              <Square className="mr-2 h-4 w-4" />
-            ) : (
-              <Play className="mr-2 h-4 w-4" />
-            )}
-            {isPipelineActive ? 'Stop Pipeline' : 'Start Pipeline'}
-          </>
-        )}
-      </Button>
+
 
       {/* Water Break Settings Card */}
       <Card className="backdrop-blur-sm bg-white/95 border border-cyan-100">

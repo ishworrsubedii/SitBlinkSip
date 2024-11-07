@@ -46,56 +46,44 @@ active_connections = set()
 async def websocket_endpoint(websocket: WebSocket, posture: bool = False, eye_blink: bool = False):
     await websocket.accept()
     active_connections.add(websocket)
-    frame_count = 0
 
-    if posture and eye_blink:
-        upload_dir = eye_blink_det_dir
-    elif posture:
-        upload_dir = posture_det_dir
-
-    elif eye_blink:
-        upload_dir = eye_blink_det_dir
-
-    else:
-        return {"message": "Please select either posture or eye_blink or both."}
+    if not (posture or eye_blink):
+        await websocket.send_json({"message": "Please select either posture or eye_blink or both."})
+        return
 
     try:
         while True:
             frame_data = await websocket.receive_bytes()
+            frame = cv2.imdecode(np.frombuffer(frame_data, np.uint8), cv2.IMREAD_COLOR)
 
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"frame_{timestamp}.jpg"
-            filepath = os.path.join(upload_dir, filename)
+            frame_response = {}
 
-            # Save original frame
-            with open(filepath, "wb") as f:
-                f.write(frame_data)
+            if eye_blink:
+                processed_frame_eye_blink, ear, blink = pipeline.blink_detector.process_frame(frame)
+                if processed_frame_eye_blink is not None:
+                    frame_response["eye_blink"] = {
+                        "ear": ear,
+                        "blink": blink,
+                        "image": await convert_frame_to_webp_base64(processed_frame_eye_blink)
+                    }
 
-            print(f"Saved and processed frame: {filename}")
-            frame_count += 1
+            if posture:
+                processed_frame_posture, head_tilt, displacement_ratio, posture_status = pipeline.posture_detector.process_frame(
+                    frame)
+                if processed_frame_posture is not None:
+                    frame_response["posture"] = {
+                        "head_tilt": head_tilt,
+                        "displacement_ratio": displacement_ratio,
+                        "status": posture_status,
+                        "image": await convert_frame_to_webp_base64(processed_frame_posture)
+                    }
+
+            await websocket.send_json(frame_response)
 
     except Exception as e:
         print(f"Error: {str(e)}")
     finally:
         active_connections.remove(websocket)
-
-
-@sit_blink_router.post("/clear-frames")
-async def clear_frames():
-    try:
-        for file in os.listdir(output_dir):
-            if file.endswith('.jpg'):
-                os.remove(os.path.join(output_dir, file))
-                response = {"message": "All frames cleared",
-                            "status": 200}
-            else:
-                response = {"message": "No frames to clear",
-                            "status": 200}
-
-            return JSONResponse(content=response, status_code=200)
-    except Exception as e:
-        response = {"message": f"Error: {str(e)}", "status": 500}
-        return JSONResponse(content=response, status_code=500)
 
 
 async def eye_blink_detection():
@@ -126,64 +114,6 @@ async def convert_frame_to_webp_base64(frame: np.ndarray) -> str:
 
         return f"data:image/webp;base64,{img_base64}"
     return None
-
-
-async def generate_frames(posture: bool, eye_blink: bool):
-    try:
-        while True:
-            frame_data = {}
-
-            if posture and eye_blink:
-                processed_frame_eye_blink = await eye_blink_detection()
-                processed_frame_posture = await posture_detection()
-
-                if processed_frame_eye_blink is not None:
-                    frame_data["processed_frame_eye_blink"] = await convert_frame_to_webp_base64(
-                        processed_frame_eye_blink)
-                if processed_frame_posture is not None:
-                    frame_data["processed_frame_posture"] = await convert_frame_to_webp_base64(processed_frame_posture)
-
-            elif posture:
-                processed_frame_posture = await posture_detection()
-                if processed_frame_posture is not None:
-                    frame_data["processed_frame_posture"] = await convert_frame_to_webp_base64(processed_frame_posture)
-
-            elif eye_blink:
-                processed_frame_eye_blink = await eye_blink_detection()
-                if processed_frame_eye_blink is not None:
-                    frame_data["processed_frame_eye_blink"] = await convert_frame_to_webp_base64(
-                        processed_frame_eye_blink)
-            else:
-                frame_data = {
-                    "message": "Please select either posture or eye_blink or both."
-                }
-                break
-
-            frame_data["timestamp"] = str(asyncio.get_event_loop().time())
-
-            # Format as SSE data
-            data = json.dumps(frame_data)
-            yield f"data: {data}\n\n"
-
-            # Add a small delay to control frame rate
-            await asyncio.sleep(0.033)  # ~30 FPS
-
-    except asyncio.CancelledError:
-        print("Client disconnected")
-        raise
-    except Exception as e:
-        print(f"Error in stream: {str(e)}")
-        raise
-
-
-@sit_blink_router.post("/start_sitblink_stream")
-async def eye_blink_stream(request: StreamRequest):
-    pipeline.validate(posture=request.posture, eye_blink=request.eye_blink)
-
-    return StreamingResponse(
-        generate_frames(request.posture, request.eye_blink),
-        media_type="text/event-stream"
-    )
 
 
 @sit_blink_router.get("/get_posture_data")
