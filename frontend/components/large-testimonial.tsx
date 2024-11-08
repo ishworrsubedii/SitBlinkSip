@@ -23,7 +23,7 @@ export default function LargeTestimonial() {
               <span>Faham </span>{" "}
               <span className="text-gray-400">/</span>{" "}
               <span className="text-blue-500">
-                Frontend Developer at TCP
+                Full Stack Developer at TCP
               </span>
             </div>
           </div>

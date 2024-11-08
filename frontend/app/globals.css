@@ -90,3 +90,42 @@
 .recharts-tooltip-cursor {
   stroke: rgb(var(--foreground) / 0.2);
 }
+
+.feature-card {
+  @apply flex flex-col items-center gap-4 p-6 rounded-xl bg-white shadow-sm 
+         hover:shadow-md transition-all duration-300 border border-gray-100;
+}
+
+.feature-card:hover {
+  @apply transform -translate-y-1;
+}
+
+/* Add animation keyframes and other custom styles */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.feature-icon {
+  animation: pulse 2s infinite;
+}
+
+.video-card {
+  @apply relative overflow-hidden rounded-xl transition-all duration-300;
+}
+
+.video-card:hover {
+  @apply transform -translate-y-2 shadow-xl;
+}
+
+/* Add more custom animations as needed */

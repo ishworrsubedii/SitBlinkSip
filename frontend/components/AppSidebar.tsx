@@ -13,7 +13,8 @@ import {
   LineChart,
   Calendar,
   MessageSquare,
-  Settings
+  Settings,
+  Icon
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -40,25 +41,25 @@ export function AppSidebar() {
   const mainNavItems = [
     {
       title: "Dashboard",
-      href: "/dashboard",
+      href: "/sbs-pro/dashboard",
       Icon: Home,
       description: "Overview of your health metrics"
     },
     {
       title: "Services",
-      href: "/services",
+      href: "/sbs-pro/settings",
       Icon: Settings,
       description: "Configure monitoring services"
     },
     {
       title: "Analytics",
-      href: "/analytics",
+      href: "/sbs-pro/analytics",
       Icon: LineChart,
       description: "Detailed health data analysis"
     },
     {
       title: "Activity",
-      href: "/activity",
+      href: "/sbs-pro/activity",
       Icon: Activity,
       description: "Your daily activities and goals"
     }
@@ -67,28 +68,28 @@ export function AppSidebar() {
   const featureNavItems = [
     {
       title: "Posture Monitor",
-      href: "/posture",
+      href: "/sbs-pro/posture",
       Icon: Brain,
       color: "text-emerald-500",
       description: "Real-time posture tracking"
     },
     {
       title: "Eye Care",
-      href: "/eye-care",
+      href: "/sbs-pro/eye-care",
       Icon: Eye,
       color: "text-blue-500",
       description: "Blink rate monitoring"
     },
     {
       title: "Hydration",
-      href: "/hydration",
+      href: "/sbs-pro/hydration",
       Icon: Droplets,
       color: "text-cyan-500",
       description: "Water intake tracking"
     },
     {
       title: "AI Assistant",
-      href: "/chatbot",
+      href: "/sbs-pro/chatbot",
       Icon: MessageSquare,
       color: "text-violet-500",
       description: "Your health companion"
@@ -98,14 +99,14 @@ export function AppSidebar() {
   const toolsNavItems = [
     {
       title: "Timer",
-      href: "/timer",
+      href: "/sbs-pro/timer",
       Icon: Timer,
       color: "text-purple-500",
       description: "Break reminders"
     },
     {
       title: "Calendar",
-      href: "/calendar",
+      href: "/sbs-pro/calendar",
       Icon: Calendar,
       color: "text-orange-500",
       description: "Schedule your health routine"

@@ -27,6 +27,9 @@ export default {
         "6xl": ["4rem", { lineHeight: "1", letterSpacing: "-0.037em" }],
         "7xl": ["4.5rem", { lineHeight: "1", letterSpacing: "-0.037em" }],
       },
+      scale: {
+        '102': '1.02',
+      },
       keyframes: {
         'code-1': { '0%': { opacity: '0' }, '3%, 100%': { opacity: '1' } },
         'code-2': { '0%, 10%': { opacity: '0' }, '13%, 100%': { opacity: '1' } },
@@ -38,10 +41,28 @@ export default {
         'code-8': { '0%, 70%': { opacity: '0' }, '73%, 100%': { opacity: '1' } },
         'code-9': { '0%, 80%': { opacity: '0' }, '83%, 100%': { opacity: '1' } },
         'code-10': { '0%, 90%': { opacity: '0' }, '93%, 100%': { opacity: '1' } },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
+        },
       },
       animation: {
         wiggle: 'wiggle 1s ease-in-out infinite',
         'float': 'float 3s ease-in-out infinite',
+        'code-1': 'code-1 5s ease-in-out forwards',
+        'code-2': 'code-2 5s ease-in-out forwards',
+        'code-3': 'code-3 5s ease-in-out forwards',
+        'code-4': 'code-4 5s ease-in-out forwards',
+        'code-5': 'code-5 5s ease-in-out forwards',
+        'code-6': 'code-6 5s ease-in-out forwards',
+        'code-7': 'code-7 5s ease-in-out forwards',
+        'code-8': 'code-8 5s ease-in-out forwards',
+        'code-9': 'code-9 5s ease-in-out forwards',
+        'code-10': 'code-10 5s ease-in-out forwards',
       }
     },
   },

@@ -1,159 +1,159 @@
 import Link from "next/link";
 import Logo from "./logo";
+import { 
+  Mail, 
+  MessageCircle, 
+  Twitter, 
+  Github, 
+  Linkedin, 
+  Heart,
+  BookOpen,
+  HelpCircle,
+  Shield,
+  Users,
+  Sparkles,
+  Bot,
+  MapPin,
+  Phone
+} from "lucide-react";
 
 export default function Footer({ border = false }: { border?: boolean }) {
   return (
-    <footer>
+    <footer className="bg-white" aria-label="Site Footer">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div
-          className={`grid gap-10 py-8 sm:grid-cols-12 md:py-12 ${border ? "border-t [border-image:linear-gradient(to_right,transparent,theme(colors.slate.200),transparent)1]" : ""}`}
-        >
-          {/* 1st block - Logo and Copyright */}
-          <div className="space-y-2 sm:col-span-12 lg:col-span-4">
-            <div>
-              <Logo />
+        {/* Main footer content */}
+        <div className={`grid gap-8 py-8 sm:grid-cols-12 md:py-12 ${
+          border ? "border-t border-gray-200" : ""
+        }`}>
+          {/* Brand Section - Updated with inline logo and text */}
+          <div className="sm:col-span-12 lg:col-span-4">
+            <div className="flex flex-col space-y-4">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2 mb-2">
+                  <Logo />
+                  <span className="text-xl font-semibold text-gray-900">
+                    SitBlinkSip
+                  </span>
+                </div>
+                <span className="text-sm text-gray-600 max-w-sm pl-10 leading-relaxed">
+                  Your digital wellness companion. We help developers and professionals maintain better posture, 
+                  prevent eye strain, and stay hydrated throughout their workday. Join to improve your health and 
+                  productivity with our AI-powered monitoring solutions.
+                </span>
+                
+              </div>
             </div>
-            <div className="text-sm text-gray-600">
-              &copy; SitBlinkSip - All rights reserved.
+          </div>
+
+          {/* Quick Links */}
+          <div className="sm:col-span-6 md:col-span-3 lg:col-span-2">
+            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Features</h3>
+            <ul className="space-y-3">
+              {quickLinks.map((link) => (
+                <li key={link.href}>
+                  <Link 
+                    href={link.href}
+                    className="text-gray-600 hover:text-blue-500 transition-colors duration-200 flex items-center gap-2"
+                    aria-label={link.label}
+                  >
+                    <link.icon className="w-4 h-4" />
+                    <span>{link.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div className="sm:col-span-6 md:col-span-3 lg:col-span-2">
+            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Resources</h3>
+            <ul className="space-y-3">
+              {resourceLinks.map((link) => (
+                <li key={link.href}>
+                  <Link 
+                    href={link.href}
+                    className="text-gray-600 hover:text-blue-500 transition-colors duration-200 flex items-center gap-2"
+                    aria-label={link.label}
+                  >
+                    <link.icon className="w-4 h-4" />
+                    <span>{link.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Social Links */}
+          <div className="sm:col-span-6 md:col-span-3 lg:col-span-4">
+            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Connect With Us</h3>
+            <div className="flex space-x-4">
+              {socialLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="text-gray-400 hover:text-blue-500 transition-colors duration-200 p-2 rounded-full hover:bg-blue-50"
+                  aria-label={link.label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <link.icon className="w-6 h-6" />
+                </a>
+              ))}
             </div>
-          </div>
-
-          {/* 2nd block - Features */}
-          <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
-            <h3 className="text-sm font-medium">Features</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  className="text-gray-600 transition hover:text-gray-900"
-                  href="#features"
-                >
-                  Eye Blink Monitoring
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="text-gray-600 transition hover:text-gray-900"
-                  href="#features"
-                >
-                  Posture Monitoring
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="text-gray-600 transition hover:text-gray-900"
-                  href="#features"
-                >
-                  Water Break Reminder
-                  
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="text-gray-600 transition hover:text-gray-900"
-                  href="#features"
-                >
-                  Health Analytics
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* 3rd block - Resources */}
-          <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
-            <h3 className="text-sm font-medium">Resources</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  className="text-gray-600 transition hover:text-gray-900"
-                  href="/privacy"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="text-gray-600 transition hover:text-gray-900"
-                  href="/terms"
-                >
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="text-gray-600 transition hover:text-gray-900"
-                  href="/help"
-                >
-                  Help Center
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* 4th block - Social */}
-          <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
-            <h3 className="text-sm font-medium">Social</h3>
-            <ul className="flex gap-1">
-              <li>
-                <Link
-                  className="flex items-center justify-center text-blue-500 transition hover:text-blue-600"
-                  href="https://x.com/ishworr_"
-                  aria-label="Twitter"
-                >
-                  <svg
-                    className="h-8 w-8 fill-current"
-                    viewBox="0 0 32 32"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="m13.063 9 3.495 4.475L20.601 9h2.454l-5.359 5.931L24 23h-4.938l-3.866-4.893L10.771 23H8.316l5.735-6.342L8 9h5.063Zm-.74 1.347h-1.457l8.875 11.232h1.36l-8.778-11.232Z"></path>
-                  </svg>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center justify-center text-blue-500 transition hover:text-blue-600"
-                  href="https://medium.com/@ishworrsubedii"
-                  aria-label="Medium"
-                >
-                  <svg
-                    className="h-8 w-8 fill-current"
-                    viewBox="0 0 32 32"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M23 8H9a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1Zm-1.708 3.791-.858.823a.251.251 0 0 0-.1.241V18.9a.251.251 0 0 0 .1.241l.838.823v.181h-4.215v-.181l.868-.843c.085-.085.085-.11.085-.241v-4.887l-2.41 6.131h-.329l-2.81-6.13V18.1a.567.567 0 0 0 .156.472l1.129 1.37v.181h-3.2v-.181l1.129-1.37a.547.547 0 0 0 .146-.472v-4.749a.416.416 0 0 0-.138-.351l-1-1.209v-.181H13.8l2.4 5.283 2.122-5.283h2.971l-.001.181Z"></path>
-                  </svg>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center justify-center text-blue-500 transition hover:text-blue-600"
-                  href="https://github.com/ishworrsubedii"
-                  aria-label="Github"
-                >
-                  <svg
-                    className="h-8 w-8 fill-current"
-                    viewBox="0 0 32 32"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M16 8.2c-4.4 0-8 3.6-8 8 0 3.5 2.3 6.5 5.5 7.6.4.1.5-.2.5-.4V22c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.3 1.9.9 2.3.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-4 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8.6-.2 1.3-.3 2-.3s1.4.1 2 .3c1.5-1 2.2-.8 2.2-.8.4 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.1 0 3.1-1.9 3.7-3.7 3.9.3.4.6.9.6 1.6v2.2c0 .2.1.5.6.4 3.2-1.1 5.5-4.1 5.5-7.6-.1-4.4-3.7-8-8.1-8z"></path>
-                  </svg>
-                </Link>
-              </li>
-            </ul>
           </div>
         </div>
-      </div>
 
-      {/* Big text */}
-      <div className="relative -mt-16 h-60 w-full" aria-hidden="true">
-        <div className="pointer-events-none absolute left-1/2 -z-10 -translate-x-1/2 text-center text-[348px] font-bold leading-none before:bg-gradient-to-b before:from-gray-200 before:to-gray-100/30 before:to-80% before:bg-clip-text before:text-transparent before:content-['SItBlinkSip'] after:absolute after:inset-0 after:bg-gray-300/70 after:bg-clip-text after:text-transparent after:mix-blend-darken after:content-['SitBli'] after:[text-shadow:0_1px_0_white]"></div>
-        {/* Glow */}
-        <div
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-2/3"
-          aria-hidden="true"
-        >
-          <div className="h-56 w-56 rounded-full border-[20px] border-blue-700 blur-[80px]"></div>
+        {/* Bottom Bar */}
+        <div className="py-4 border-t border-gray-200">
+          <div className="md:flex md:items-center md:justify-between text-sm">
+            <div className="flex items-center justify-center md:justify-start gap-2 text-gray-600">
+              <span>&copy; {new Date().getFullYear()} SitBlinkSip.</span>
+              <span className="flex items-center gap-1">
+                Made with <Heart className="w-4 h-4 text-red-500" /> for developers
+              </span>
+            </div>
+            <div className="mt-4 md:mt-0">
+              <div className="flex justify-center md:justify-end space-x-6 text-gray-600">
+                {legalLinks.map((link) => (
+                  <Link 
+                    key={link.href}
+                    href={link.href} 
+                    className="hover:text-blue-500 transition-colors duration-200"
+                    aria-label={link.label}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
   );
 }
+
+// Link configurations
+const quickLinks = [
+  { label: 'Eye Care', href: '/features#eye-care', icon: BookOpen },
+  { label: 'Posture Guardian', href: '/features#posture', icon: Shield },
+  { label: 'Health Analytics', href: '/features#analytics', icon: Users },
+];
+
+const resourceLinks = [
+  { label: 'Help Center', href: '/help', icon: HelpCircle },
+  { label: 'Documentation', href: '/docs', icon: BookOpen },
+  { label: 'Blog', href: '/blog', icon: MessageCircle },
+];
+
+const socialLinks = [
+  { label: 'Twitter', href: 'https://twitter.com/sitblinksip', icon: Twitter },
+  { label: 'GitHub', href: 'https://github.com/sitblinksip', icon: Github },
+  { label: 'LinkedIn', href: 'https://linkedin.com/company/sitblinksip', icon: Linkedin },
+];
+
+const legalLinks = [
+  { label: 'Privacy', href: '/privacy' },
+  { label: 'Terms', href: '/terms' },
+  { label: 'Cookies', href: '/cookies' },
+];
