@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Stripes from "@/public/images/stripes-dark.svg";
 import { Sparkles, Check } from "lucide-react";
-import PricingSection from '@/app/pricing/page';
-
+import PricingSection from '@/components/PricingSection';
 
 export default function Cta() {
   return (
