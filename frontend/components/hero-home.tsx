@@ -1,116 +1,198 @@
+"use client";
+
 import Image from "next/image";
 import PageIllustration from "@/components/page-illustration";
-import Avatar01 from "@/public/images/avatar-01.jpg";
-import Avatar02 from "@/public/images/avatar-02.jpg";
-import Avatar03 from "@/public/images/avatar-03.jpg";
-import Avatar04 from "@/public/images/avatar-04.jpg";
-import Avatar05 from "@/public/images/avatar-05.jpg";
-import Avatar06 from "@/public/images/avatar-06.jpg";
 import { Brain, Eye, Droplets, Spline } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function HeroHome() {
+  const phrases = [
+    "For Tech Experts",
+    "For Office Pros",
+    "For Creators & Coders",
+    "For Learners & Teachers"
+  ];
+  
+  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
+  const [currentText, setCurrentText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const typingSpeed = 100; // Speed for typing
+    const deletingSpeed = 50; // Speed for deleting
+    const pauseTime = 2000; // Time to pause at full phrase
+
+    const typeWriter = () => {
+      const currentPhrase = phrases[currentPhraseIndex];
+      
+      if (isDeleting) {
+        // Deleting text
+        setCurrentText(currentPhrase.substring(0, currentText.length - 1));
+        if (currentText === "") {
+          setIsDeleting(false);
+          setCurrentPhraseIndex((prev) => (prev + 1) % phrases.length);
+        }
+      } else {
+        // Typing text
+        setCurrentText(currentPhrase.substring(0, currentText.length + 1));
+        if (currentText === currentPhrase) {
+          // Pause at full phrase
+          setTimeout(() => setIsDeleting(true), pauseTime);
+          return;
+        }
+      }
+    };
+
+    const timer = setTimeout(
+      typeWriter,
+      isDeleting ? deletingSpeed : typingSpeed
+    );
+
+    return () => clearTimeout(timer);
+  }, [currentText, isDeleting, currentPhraseIndex]);
+
   return (
-    <section className="relative">
+    <section className="relative min-h-screen" aria-label="Main Hero Section">
       <PageIllustration />
       
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        
-        <div className="pb-12 pt-32 md:pb-20 md:pt-40">
-       
-          <div className="pb-12 text-center md:pb-16">
-            <h1
-              className="mb-6 text-5xl font-bold text-slate-900 md:text-6xl"
-              data-aos="zoom-y-out"
-            >
-              Your Digital Wellness
-              <br className="hidden sm:block" />
-              <span className="text-blue-600"> Companion</span>
-            </h1>
-            <div className="mx-auto max-w-3xl">
-              <p
-                className="mb-8 text-lg text-slate-700"
-                data-aos="zoom-y-out"
-                data-aos-delay={150}
-              >
-                Transform your work-from-home experience with our AI-powered health companion. 
-                Maintain perfect posture, protect your eyes, and stay hydrated while boosting 
-                your productivity and well-being.
-              </p>
-              <div
-                className="mx-auto max-w-xs sm:flex sm:max-w-none sm:justify-center"
-                data-aos="zoom-y-out"
-                data-aos-delay={300}
-              >
-                <a
-                  className="btn group mb-4 w-full bg-blue-600 text-white hover:bg-blue-700 sm:mb-0 sm:w-auto"
-                  href="#0"
-                >
-                  <span className="relative inline-flex items-center">
-                    Start Your Health Journey
-                    <span className="ml-1 transition-transform group-hover:translate-x-0.5">
-                      →
-                    </span>
-                  </span>
-                </a>
-                <a
-                  className="btn w-full bg-slate-100 text-slate-700 hover:bg-slate-200 sm:ml-4 sm:w-auto"
-                  href="#0"
-                >
-                  View Features
-                </a>
-              </div>
-            </div>
-          </div>
-          
-
-          {/* Main Features */}
-          <div className="mb-10 grid grid-cols-3 gap-6" data-aos="fade-up">
-            <div className="group flex flex-col items-center rounded-xl bg-white p-6 shadow-sm transition-all hover:shadow-md">
-              <div className="animate-float mb-4 rounded-full bg-blue-50 p-3">
-                <Spline className="h-6 w-6 text-blue-600" />
-              </div>
-              <h3 className="mb-2 font-semibold text-slate-800">Posture Guardian</h3>
-              <p className="text-center text-sm text-slate-600">
-                AI-powered posture detection to prevent back pain and promote healthy sitting habits
-              </p>
-            </div>
-
-            <div className="group flex flex-col items-center rounded-xl bg-white p-6 shadow-sm transition-all hover:shadow-md">
-              <div className="animate-float mb-4 rounded-full bg-violet-50 p-3">
-                <Eye className="h-6 w-6 text-violet-600" />
-              </div>
-              <h3 className="mb-2 font-semibold text-slate-800">Eye Care Timer</h3>
-              <p className="text-center text-sm text-slate-600">
-                Smart reminders using the 20-20-20 rule to reduce digital eye strain
-              </p>
-            </div>
-
-            <div className="group flex flex-col items-center rounded-xl bg-white p-6 shadow-sm transition-all hover:shadow-md">
-              <div className="animate-float mb-4 rounded-full bg-cyan-50 p-3">
-                <Droplets className="h-6 w-6 text-cyan-600" />
-              </div>
-              <h3 className="mb-2 font-semibold text-slate-800">Hydration Coach</h3>
-              <p className="text-center text-sm text-slate-600">
-                Personalized water intake tracking and smart reminder system
-              </p>
-            </div>
-          </div>
-
+        <div className="pb-12 pt-40 md:pt-52">
           {/* Hero Content */}
-          
+          <div className="pb-6 text-center md:pb-8">
+            <h1 className="text-4xl font-bold text-slate-900 md:text-5xl lg:text-6xl">
+              AI-Powered Health Monitoring
+            </h1>
+            <div className="mx-auto mb-8 h-14 pt-4">
+              <span className="relative inline-block text-blue-600/90 text-3xl font-bold md:text-4xl lg:text-5xl">
+                <span className="invisible">For Computer Professionals</span>
+                <span className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap">
+                  {currentText}
+                  <span className="animate-blink ml-1 inline-block h-8 w-[2px] bg-blue-600/90"></span>
+                </span>
+              </span>
+            </div>
+            <div className="mx-auto max-w-2xl pt-4">
+              <p className="mb-8 text-lg text-slate-600/80">
+                Enhance your well-being with advanced AI monitoring for posture, eye health, and work-break balance. 
+                Our intelligent system provides real-time tracking and personalized recommendations.
+              </p>
+              <div className="flex flex-col items-center justify-center space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+                <a
+                  className="inline-flex h-12 items-center rounded-lg bg-blue-600 px-6 text-white transition duration-150 ease-in-out hover:bg-blue-700"
+                  href="/signup"
+                >
+                  Start Free Trial
+                </a>
+                <a
+                  className="inline-flex h-12 items-center rounded-lg bg-slate-100 px-6 text-slate-600 transition duration-150 ease-in-out hover:bg-slate-200"
+                  href="/features"
+                >
+                  Explore Features
+                </a>
+              </div>
+            </div>
+          </div>
 
-          <div className="mb-8 text-center">
-            <p className="text-sm font-medium text-slate-600">
-              Powered by Advanced Technologies
-            </p>
-            <div className="mt-3 flex items-center justify-center gap-6">
-              {["Computer Vision", "Machine Learning", "Data Analytics", "Next Js"].map((tech) => (
-                <span key={tech} className="text-xs text-slate-500">{tech}</span>
+          {/* Feature Cards */}
+          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="group flex flex-col items-center rounded-xl bg-white p-6 shadow-sm transition-all hover:shadow-md">
+              <div className="animate-float mb-4 rounded-full bg-blue-50/50 p-3">
+                <Spline className="h-6 w-6 text-blue-600/80" />
+              </div>
+              <h3 className="mb-2 font-semibold text-slate-800">Posture Analysis</h3>
+              <p className="text-center text-sm text-slate-600">
+                Real-time posture monitoring with AI-driven correction guidance
+              </p>
+            </div>
+
+            <div className="group flex flex-col items-center rounded-xl bg-white p-6 shadow-sm transition-all hover:shadow-md">
+              <div className="animate-float mb-4 rounded-full bg-violet-50/50 p-3">
+                <Eye className="h-6 w-6 text-violet-600/80" />
+              </div>
+              <h3 className="mb-2 font-semibold text-slate-800">Eye Care Monitor</h3>
+              <p className="text-center text-sm text-slate-600">
+                Smart blink detection and eye strain prevention system
+              </p>
+            </div>
+
+            <div className="group flex flex-col items-center rounded-xl bg-white p-6 shadow-sm transition-all hover:shadow-md">
+              <div className="animate-float mb-4 rounded-full bg-cyan-50/50 p-3">
+                <Brain className="h-6 w-6 text-cyan-600/80" />
+              </div>
+              <h3 className="mb-2 font-semibold text-slate-800">Break Timer</h3>
+              <p className="text-center text-sm text-slate-600">
+                Intelligent break scheduling with hydration reminders
+              </p>
+            </div>
+       
+ 
+          </div>
+
+          {/* Scroll Indicator */}
+          <div className="mt-10 text-center" data-aos="fade-up" data-aos-delay="100">
+            <div className="flex flex-col items-center">
+              <span className="mb-3 text-sm text-slate-600">Scroll to explore more</span>
+              <svg className="h-6 w-6 animate-bounce text-slate-400" fill="none" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+              </svg>
+            </div>
+          </div>
+
+          {/* Tech Stack Section */}
+          <div className="mt-32" data-aos="fade-up">
+            <h3 className="mb-8 text-center text-xl font-semibold text-slate-800">
+              Powered by Advanced Technology
+            </h3>
+            
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+              {[
+                {
+                  icon: <Brain className="h-5 w-5 text-blue-600" />,
+                  name: "Computer Vision",
+                  description: "Advanced posture tracking",
+                  borderColor: "border-blue-200",
+                  hoverBorder: "hover:border-blue-400",
+                },
+                {
+                  icon: <Eye className="h-5 w-5 text-violet-600" />,
+                  name: "Eye Tracking",
+                  description: "Blink detection & monitoring",
+                  borderColor: "border-violet-200",
+                  hoverBorder: "hover:border-violet-400",
+                },
+                {
+                  icon: <Brain className="h-5 w-5 text-emerald-600" />,
+                  name: "AI Analytics",
+                  description: "Health pattern recognition",
+                  borderColor: "border-emerald-200",
+                  hoverBorder: "hover:border-emerald-400",
+                },
+                {
+                  icon: <Spline className="h-5 w-5 text-orange-600" />,
+                  name: "Real-time Processing",
+                  description: "Instant health insights",
+                  borderColor: "border-orange-200",
+                  hoverBorder: "hover:border-orange-400",
+                },
+              ].map((tech) => (
+                <div
+                  key={tech.name}
+                  className={`group relative border-2 ${tech.borderColor} ${tech.hoverBorder} rounded-lg p-4 transition-all duration-300 hover:-translate-y-1`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="rounded-md bg-white p-1.5">
+                      {tech.icon}
+                    </div>
+                    <h4 className="font-medium text-slate-800">{tech.name}</h4>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-600">
+                    {tech.description}
+                  </p>
+                  <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-slate-100 to-slate-200 transition-all duration-300 group-hover:w-full"></div>
+                </div>
               ))}
             </div>
           </div>
-
-          
         </div>
       </div>
     </section>
