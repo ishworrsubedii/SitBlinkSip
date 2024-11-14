@@ -86,7 +86,7 @@ export default function Header() {
             <Link href="/preview" className="btn-sm bg-white font-medium text-gray-800 shadow transition-colors hover:bg-gray-50">
               Preview
             </Link>
-            <Link href="/get-started" className="btn-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-sm hover:from-blue-700 hover:to-blue-800 transition-all">
+            <Link href="/waitlist" className="btn-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-sm hover:from-blue-700 hover:to-blue-800 transition-all">
               Get Started
             </Link>
           </div>
@@ -129,7 +129,7 @@ export default function Header() {
                   <Link href="/demo" className="btn-sm bg-white font-medium text-gray-800 shadow transition-colors hover:bg-gray-50 text-center">
                     Live Demo
                   </Link>
-                  <Link href="/get-started" className="btn-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-sm hover:from-blue-700 hover:to-blue-800 transition-all text-center">
+                  <Link href="/waitlist" className="btn-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-sm hover:from-blue-700 hover:to-blue-800 transition-all text-center">
                     Get Started
                   </Link>
                 </div>

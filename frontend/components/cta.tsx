@@ -46,7 +46,7 @@ export default function Cta() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 px-4 sm:px-0">
                 <a
                   className="w-full sm:w-auto group inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 sm:px-8 py-3 text-white transition-all hover:bg-blue-700"
-                  href="/signup"
+                  href="/waitlist"
                 >
                   Get Started
                   <Sparkles className="ml-2 h-4 w-4 transition-transform group-hover:scale-110" />
@@ -71,7 +71,7 @@ export default function Cta() {
       <PricingSection className="pt-16 md:pt-20" standalone={false} hideTitle={false} />
 
       {/* Newsletter Section */}
-      <div className="mx-auto mt-20 max-w-4xl px-4">
+      <div className="mx-auto mt-20 mb-20 max-w-4xl px-4">
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-blue-600/90 to-blue-800/90 p-8 shadow-2xl">
           {/* Background decoration */}
           <div className="absolute inset-0 bg-grid-white/10 bg-[size:20px_20px] [mask-image:radial-gradient(white,transparent_70%)]" />

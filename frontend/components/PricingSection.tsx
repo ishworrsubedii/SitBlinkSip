@@ -2,6 +2,9 @@ import { Check } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
+import { Badge } from "@/components/ui/badge";
+
+import Link from 'next/link';
 
 interface PricingPlan {
   name: string;
@@ -18,7 +21,12 @@ const pricingPlans: PricingPlan[] = [
     features: [
       'Basic posture monitoring',
       'Eye blink tracking',
-      'Basic break reminders'
+      'Water break reminders',
+      '1 week health records',
+      'Basic break scheduling',
+      'Simple health stats',
+      'Daily health tips',
+      'Basic chat support',
     ],
     buttonText: 'Get Started'
   },
@@ -29,7 +37,13 @@ const pricingPlans: PricingPlan[] = [
       'Advanced posture analysis',
       'Comprehensive eye health tracking',
       'Smart break scheduling',
-      'Weekly health insights'
+      'Water & exercise reminders',
+      'Unlimited health records',
+      'Weekly health insights',
+      'Customizable alerts',
+      'Personal AI health assistant',
+      'Data-driven recommendations',
+      'Health trend analysis'
     ],
     buttonText: 'Get Started',
     isPopular: true
@@ -41,7 +55,11 @@ const pricingPlans: PricingPlan[] = [
       'Everything in Pro',
       'Team analytics dashboard',
       'Custom integration options',
-      'Dedicated support'
+      'Priority support',
+      'Team health reports',
+      'API access',
+      'Advanced AI insights',
+      'Custom AI training'
     ],
     buttonText: 'Contact Sales'
   }
@@ -62,6 +80,7 @@ export default function PricingSection({
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${className}`}>
       {!hideTitle && (
         <div className="text-center mb-12">
+        
           <h2 className="text-4xl md:text-5xl font-bold mb-4">Simple, Transparent <span className="text-blue-600">Pricing</span></h2>
           <p className="text-lg text-gray-600">Choose the plan that's right for you</p>
         </div>
@@ -98,13 +117,15 @@ export default function PricingSection({
                         </li>
                       ))}
                     </ul>
-                    <button className={`w-full py-3 px-4 rounded-lg font-medium ${
-                      plan.isPopular
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
-                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                    }`}>
-                      {plan.buttonText}
-                    </button>
+                    <Link href="/waitlist" passHref>
+                      <button className={`w-full py-3 px-4 rounded-lg font-medium mt-4 ${
+                        plan.isPopular
+                          ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
+                          : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                      }`}>
+                        {plan.buttonText}
+                      </button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>

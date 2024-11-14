@@ -100,16 +100,10 @@ export default function Features() {
                     <span className="relative invisible">Try Demo</span>
                   </a>
                   <a 
-                    href="/signup" 
-                    className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium text-white bg-blue-600 rounded-md transition duration-300 ease-out shadow-md hover:shadow-lg"
+                    className="inline-flex h-12 items-center rounded-lg bg-blue-600 px-6 text-white transition duration-150 ease-in-out hover:bg-blue-700"
+                    href="/waitlist"
                   >
-                    <span className="absolute inset-0 flex items-center justify-center w-full h-full text-white duration-300 -translate-x-full bg-blue-700 group-hover:translate-x-0 ease">
-                      <Sparkles className="w-5 h-5" />
-                    </span>
-                    <span className="absolute flex items-center justify-center w-full h-full text-white transition-all duration-300 transform group-hover:translate-x-full ease">
-                      Get Started Free
-                    </span>
-                    <span className="relative invisible">Get Started Free</span>
+                    Get Started Free
                   </a>
                 </div>
               </div>

@@ -79,7 +79,7 @@ export default function HeroHome() {
               <div className="flex flex-col items-center justify-center space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
                 <a
                   className="inline-flex h-12 items-center rounded-lg bg-blue-600 px-6 text-white transition duration-150 ease-in-out hover:bg-blue-700"
-                  href="/signup"
+                  href="/waitlist"
                 >
                   Start Free Trial
                 </a>
