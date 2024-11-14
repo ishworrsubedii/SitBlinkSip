@@ -12,6 +12,7 @@ import {
   Shield,
   Users,
   Sparkles,
+  PresentationIcon,
   Bot,
   MapPin,
   Phone
@@ -141,9 +142,10 @@ const quickLinks = [
 ];
 
 const resourceLinks = [
-  { label: 'Help Center', href: '/help', icon: HelpCircle },
-  { label: 'Documentation', href: '/docs', icon: BookOpen },
+  { label: 'Pricing', href: '/pricing', icon: Sparkles },
+  { label: 'Preview', href: '/preview', icon: PresentationIcon },
   { label: 'Blog', href: '/blog', icon: MessageCircle },
+  {label:'FAQ',href:'/faq',icon:HelpCircle},
 ];
 
 const socialLinks = [

@@ -5,41 +5,51 @@ import Footer from "@/components/ui/footer";
 import Link from "next/link";
 
 export const metadata = {
-  title: 'SitBlinkSip Features - Your Digital Wellness Companion',
-  description: 'Simple tools for better workplace health: posture tracking, eye care, hydration reminders, and more. Try SitBlinkSip today!',
-  keywords: 'workplace wellness, posture tracking, eye care, hydration reminders, digital health, office health',
+  title: 'SitBlinkSip - Transform Your Workspace Health',
+  description: 'Intelligent tools to optimize posture, eye care, hydration, and more for a healthier work experience.',
+  keywords: 'workplace wellness, posture tracking, eye protection, hydration reminders, digital health, office health',
 };
 
-export default function Features() {
+const SitBlinkSipFeatures = () => {
   return (
     <>
       <Header />
       
       <main className="relative">
         <PageIllustration />
-
-        {/* Hero section */}
-        <section className="relative">
+        <div className="gap-10 flex items-center justify-center py-20 text-white">
+        </div>
+        {/* Hero Section */}
+        <section className="relative py-16 md:py-4 mb-1">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="pt-40 pb-8 md:pt-52 md:pb-12">
-              <div className="text-center">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 font-playfair-display">
-                  Transform Your{' '}
-                  <span className="text-blue-600">
-                    Workspace Health
-                  </span>
-                </h1>
-                <h2 className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                  Smart tools designed to transform your daily work routine into a healthier experience
-                </h2>
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 font-playfair-display">
+                Transform Your <span className="text-blue-600">Workspace Health</span>
+              </h1>
+              <h2 className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                Intelligent tools to optimize posture, eye care, hydration, and more for a healthier work experience.
+              </h2>
+              <div className="flex justify-center gap-4 mt-8">
+                <a 
+                  href="/preview" 
+                  className="inline-flex h-12 items-center rounded-lg bg-blue-600 px-6 text-white transition duration-150 ease-in-out hover:bg-blue-700"
+                >
+                  Try Demo
+                </a>
+                <a 
+                  className="inline-flex h-12 items-center rounded-lg bg-blue-200 px-6 text-blue-600 transition duration-150 ease-in-out hover:bg-blue-300"
+                  href="/waitlist"
+                >
+                  Get Started
+                </a>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Features grid */}
-        <section className="relative">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 md:py-16">
+        {/* Features Grid */}
+        <section className="relative py-12 md:py-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {features.map((feature) => (
                 <div 
@@ -52,6 +62,9 @@ export default function Features() {
                   <h3 className="text-2xl font-bold mb-4 text-blue-600">
                     {feature.title}
                   </h3>
+                  <p className="text-gray-600 flex-grow mb-4">
+                    {feature.description}
+                  </p>
                   <ul className="space-y-3 text-gray-600 flex-grow list-inside mb-4">
                     {feature.benefits.map((benefit, index) => (
                       <li key={index} className="flex items-start group">
@@ -83,27 +96,21 @@ export default function Features() {
                     Ready to Transform Your Work Health?
                   </h2>
                   <p className="text-blue-100">
-                    Experience the future of workplace wellness with AI-powered health monitoring and real-time guidance
+                    Experience the future of workplace wellness with AI-powered health monitoring and real-time guidance.
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <a 
                     href="/preview" 
-                    className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium bg-white rounded-md transition duration-300 ease-out shadow-md hover:shadow-lg"
+                    className="inline-flex h-12 items-center rounded-lg bg-white px-6 text-blue-600 transition duration-150 ease-in-out hover:bg-blue-100"
                   >
-                    <span className="absolute inset-0 flex items-center justify-center w-full h-full text-blue-600 duration-300 -translate-x-full bg-white group-hover:translate-x-0 ease">
-                      <Eye className="w-5 h-5" />
-                    </span>
-                    <span className="absolute flex items-center justify-center w-full h-full text-blue-600 transition-all duration-300 transform group-hover:translate-x-full ease">
-                      Try Demo
-                    </span>
-                    <span className="relative invisible">Try Demo</span>
+                    Try Demo
                   </a>
                   <a 
-                    className="inline-flex h-12 items-center rounded-lg bg-blue-600 px-6 text-white transition duration-150 ease-in-out hover:bg-blue-700"
+                    className="inline-flex h-12 items-center rounded-lg bg-blue-200 px-6 text-blue-600 transition duration-150 ease-in-out hover:bg-blue-300"
                     href="/waitlist"
                   >
-                    Get Started Free
+                    Get Started
                   </a>
                 </div>
               </div>
@@ -115,56 +122,70 @@ export default function Features() {
       <Footer border={true} />
     </>
   );
-}
+};
 
 const features = [
   {
     title: "Better Posture",
-    description: "AI helps you sit correctly to prevent back pain. Get friendly reminders when you need to adjust your position.",
+    description: "AI-powered posture tracking and personalized reminders help you maintain an ergonomic seated position and prevent back pain.",
     icon: Spline,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-500",
-    benefits: ["Track your posture in real-time", "Get reminders to rest your eyes", "Stay hydrated throughout the day"],
+    benefits: [
+      "Real-time posture monitoring",
+      "Customizable posture correction alerts",
+      "Metrics to track your progress"
+    ]
   },
   {
     title: "Eye Protection",
-    description: "Take care of your eyes with simple reminders. Follow the 20-20-20 rule: look away every 20 minutes.",
+    description: "Intelligent eye care features like the 20-20-20 rule and screen brightness adjustments ensure your eyes stay healthy and comfortable.",
     icon: Eye,
-    iconBg: "bg-violet-50",
-    iconColor: "text-violet-500",
-    benefits: ["Take care of your eyes", "Follow the 20-20-20 rule", "Get reminders to look away"],
+    benefits: [
+      "Automated 20-20-20 break reminders",
+      "Dynamic screen brightness adjustment",
+      "Personalized eye strain prevention"
+    ]
   },
   {
     title: "Hydration Coach",
-    description: "Smart water intake tracking with personalized reminders based on your activity level and workspace conditions.",
+    description: "Smart water intake tracking with personalized reminders based on your activity level and workspace conditions keeps you optimally hydrated.",
     icon: Droplets,
-    iconBg: "bg-cyan-50",
-    iconColor: "text-cyan-500",
-    benefits: ["Track your water intake", "Get personalized reminders", "Stay hydrated throughout the day"],
+    benefits: [
+      "Automatic water intake logging",
+      "Personalized hydration recommendations",
+      "Alerts for timely water breaks"
+    ]
   },
   {
     title: "Health Analytics",
     description: "Comprehensive dashboard with insights into your daily, weekly, and monthly wellness metrics and trends.",
     icon: Activity,
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-500",
-    benefits: ["Comprehensive dashboard", "Insights into wellness metrics", "Trends analysis"],
+    benefits: [
+      "Detailed health and productivity metrics",
+      "Personalized recommendations based on data",
+      "Trends analysis for long-term improvement" 
+    ]
   },
   {
     title: "Smart Notifications",
     description: "Context-aware alerts that adapt to your work patterns and help maintain optimal health habits.",
     icon: Bell,
-    iconBg: "bg-amber-50",
-    iconColor: "text-amber-500",
-    benefits: ["Adapt to your work patterns", "Help maintain optimal health habits", "Context-aware alerts"],
+    benefits: [
+      "Intelligent scheduling of reminders",
+      "Customizable notification preferences",
+      "Seamless integration with your workflow"
+    ]
   },
   {
     title: "AI Health Assistant",
     description: "Personalized recommendations and insights powered by machine learning to optimize your workspace wellness.",
     icon: Brain,
-    iconBg: "bg-rose-50",
-    iconColor: "text-rose-500",
-    benefits: ["Personalized recommendations", "Machine learning insights", "Optimize workspace wellness"],
+    benefits: [
+      "AI-driven wellness coaching",
+      "Tailored suggestions for improvement",
+      "Continuous learning and adaptation"
+    ],
     comingSoon: true
   }
 ];
+
+export default SitBlinkSipFeatures;
