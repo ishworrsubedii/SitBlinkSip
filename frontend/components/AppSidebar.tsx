@@ -47,7 +47,7 @@ export function AppSidebar() {
     },
     {
       title: "Services",
-      href: "/sbs-pro/settings",
+      href: "/sbs-pro/services",
       Icon: Settings,
       description: "Configure monitoring services"
     },
@@ -273,9 +273,13 @@ export function AppSidebar() {
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <AppSidebar />
-      <main className="flex-1 p-6">{children}</main>
+      <main className="flex-1 overflow-y-auto">
+        <div className="container p-6">
+          {children}
+        </div>
+      </main>
     </div>
-  )
+  );
 }

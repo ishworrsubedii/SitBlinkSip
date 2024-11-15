@@ -10,10 +10,12 @@ export default function DemoPage() {
   const view = searchParams.get("view") || "dashboard";
 
   return (
-    <div className="flex-1 w-full h-full overflow-y-auto">
-      {view === "dashboard" && <DashboardPage />}
-      {view === "services" && <WellnessMonitor />}
-      {view === "analytics" && <AnalyticsPage />}
+    <div className="h-screen overflow-hidden">
+      <div className="h-full overflow-y-auto">
+        {view === "dashboard" && <DashboardPage />}
+        {view === "services" && <WellnessMonitor />}
+        {view === "analytics" && <AnalyticsPage />}
+      </div>
     </div>
   );
 }
