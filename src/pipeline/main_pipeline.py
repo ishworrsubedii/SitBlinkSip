@@ -30,15 +30,26 @@ class SitBlinkSipPipeline:
 
         self.blink_detector = BlinkDetector(
             shape_predictor_path=shape_predictor_path,
-            ear_threshold=ear_threshold,
-            ear_consec_frames_min=ear_consec_frames_min,
-            ear_consec_frames_max=ear_consec_frames_max
+            ear_threshold=0.2,
+            ear_consec_frames_min=1,
+            ear_consec_frames_max=3
         )
 
         self.posture_detector = PostureDetector()
 
         # db
         self.db = initialize_database()
+
+        self.active = False
+
+    def start(self):
+        self.active = True
+        self.blink_detector.reset_blink_stats()
+
+    def stop(self):
+        self.active = False
+        # Reset statistics when stopping
+        self.blink_detector.reset_blink_stats()
 
     def validate(self, posture=False, eye_blink=False):
         self.posture = posture
@@ -75,52 +86,57 @@ class SitBlinkSipPipeline:
 
     def eye_blink_detection(self):
         processed_files = set()
+        latest_frame = None
 
         if os.path.exists(self.output_folder):
             frame_files = sorted(os.listdir(self.output_folder))
-
-            for file in frame_files:
-                if file in processed_files:
-                    continue
-
-                file_path = os.path.join(self.output_folder, file)
-                frame = cv2.imread(file_path)
-
+            
+            # Only process the latest frame
+            if frame_files:
+                latest_file = frame_files[-1]
+                file_path = os.path.join(self.output_folder, latest_file)
+                
                 try:
-                    processed_frame, ear, blink = self.blink_detector.process_frame(frame)
-                    print(f"EAR: {ear}, Blink: {blink}")
-                    self.db.insert_eye_data(ear, blink)
+                    frame = cv2.imread(file_path)
+                    if frame is not None:
+                        processed_frame, ear, blink = self.blink_detector.process_frame(frame)
+                        print(f"EAR: {ear}, Blink: {blink}")
+                        self.db.insert_eye_data(ear, blink)
+                        latest_frame = processed_frame
 
+                    # Clean up processed file
                     if not self.posture:
-                        processed_files.add(file)
-                        time.sleep(0.1)
                         os.remove(file_path)
                     else:
                         move_file(file_path, posture_det_dir)
-
-                    return processed_frame
-
+                        
                 except Exception as e:
-                    print(f"Error processing frame {file}: {str(e)}")
-                    continue
+                    print(f"Error processing frame: {str(e)}")
+                    
+        return latest_frame
 
     def posture_detection(self):
-        processed_files = set()
+        latest_frame = None
 
         if os.path.exists(posture_det_dir):
             frame_files = sorted(os.listdir(posture_det_dir))
-
-            for file in frame_files:
-                file_path = os.path.join(posture_det_dir, file)
-                frame = cv2.imread(file_path)
-
-                processed_frame, head_tilt, displacement_ratio, posture_status = self.posture_detector.process_frame(
-                    frame)
-                self.db.insert_posture_data(head_tilt, displacement_ratio, posture_status)
-                print(
-                    f"Head Tilt: {head_tilt}, Displacement Ratio: {displacement_ratio}, Posture Status: {posture_status}")
-
-                processed_files.add(file)
-                os.remove(file_path)
-
-                return processed_frame
+            
+            # Only process the latest frame
+            if frame_files:
+                latest_file = frame_files[-1]
+                file_path = os.path.join(posture_det_dir, latest_file)
+                
+                try:
+                    frame = cv2.imread(file_path)
+                    if frame is not None:
+                        processed_frame, head_tilt, displacement_ratio, posture_status = self.posture_detector.process_frame(frame)
+                        self.db.insert_posture_data(head_tilt, displacement_ratio, posture_status)
+                        latest_frame = processed_frame
+                    
+                    # Clean up processed file
+                    os.remove(file_path)
+                    
+                except Exception as e:
+                    print(f"Error processing frame: {str(e)}")
+                    
+        return latest_frame

@@ -6,12 +6,17 @@ author  @ github/ishworrsubedii
 import cv2
 import mediapipe as mp
 import numpy as np
+import os
 
 
 class PostureDetector:
-    def __init__(self, angle_threshold=150.0, displacement_threshold=0.7, draw=True):
+    def __init__(self, angle_threshold=145.0, displacement_threshold=0.65, draw=True):
         self.mp_pose = mp.solutions.pose
-        self.pose = self.mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+        self.pose = self.mp_pose.Pose(
+            min_detection_confidence=0.7,
+            min_tracking_confidence=0.7,
+            model_complexity=1
+        )
 
         self.angle_threshold = angle_threshold
         self.displacement_threshold = displacement_threshold
@@ -20,43 +25,25 @@ class PostureDetector:
         self.colors = {
             'blue': (255, 0, 0),
             'white': (255, 255, 255),
-            'good_posture': (0, 255, 127),  # Brighter green
-            'bad_posture': (0, 0, 255)  # Red for bad posture
+            'good_posture': (46, 204, 113),  # Softer green
+            'bad_posture': (231, 76, 60),  # Softer red
+            'background': (40, 40, 40),  # Dark gray background
+            'text': (236, 240, 241),  # Light gray text
+            'secondary_text': (189, 195, 199),  # Lighter gray
+            'accent': (52, 152, 219),  # Blue accent
+            'background': (0, 0, 0, 0.7)  # Semi-transparent background
         }
+        self.posture_score = 100  # Initialize posture score
+        self.score_decay = 0.5  # Score decay rate for bad posture
+        self.score_gain = 0.3  # Score gain rate for good posture
 
     def process_frame(self, frame):
-        # Reduced dimensions
-        TARGET_WIDTH = 640   # Half of 1280
-        TARGET_HEIGHT = 360  # Half of 720
-        
-        # Calculate scaling to maintain aspect ratio
-        h, w = frame.shape[:2]
-        aspect = w / h
-        
-        if aspect > TARGET_WIDTH / TARGET_HEIGHT:
-            new_w = TARGET_WIDTH
-            new_h = int(TARGET_WIDTH / aspect)
-            pad_top = (TARGET_HEIGHT - new_h) // 2
-            pad_bottom = TARGET_HEIGHT - new_h - pad_top
-            pad_left = 0
-            pad_right = 0
-        else:
-            new_h = TARGET_HEIGHT
-            new_w = int(TARGET_HEIGHT * aspect)
-            pad_left = (TARGET_WIDTH - new_w) // 2
-            pad_right = TARGET_WIDTH - new_w - pad_left
-            pad_top = 0
-            pad_bottom = 0
-            
-        # Resize frame
-        image = cv2.resize(frame, (new_w, new_h))
-        
-        # Add padding
-        image = cv2.copyMakeBorder(
-            image, pad_top, pad_bottom, pad_left, pad_right,
-            cv2.BORDER_CONSTANT, value=[0, 0, 0]
-        )
-        
+        if frame is None:
+            return None, None, None, None
+
+        # Keep original resolution for better accuracy
+        image = frame.copy()
+
         # Process frame
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
@@ -65,7 +52,7 @@ class PostureDetector:
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
         if not results.pose_landmarks:
-            return frame, None
+            return frame, None, None, None
 
         landmarks_dict = self._get_landmarks(results.pose_landmarks.landmark)
 
@@ -95,77 +82,64 @@ class PostureDetector:
         posture_status = "Bad Posture" if bad_posture else "Good Posture"
         color = self.colors['bad_posture'] if bad_posture else self.colors['good_posture']
 
+        # Update posture score
+        if bad_posture:
+            self.posture_score = max(0, self.posture_score - self.score_decay)
+        else:
+            self.posture_score = min(100, self.posture_score + self.score_gain)
+
         if self.display:
-            self._draw_custom_visualization(image, landmarks_dict, posture_status, color)
+            self._draw_enhanced_visualization(image, posture_status, color, head_tilt, displacement_ratio)
 
         return image, head_tilt, displacement_ratio, posture_status
 
-    def _draw_custom_visualization(self, image, landmarks, posture_status, color):
-        """Draw minimal visualization with just the status indicator."""
-        self._draw_status_label(image, posture_status, color)
+    def _draw_enhanced_visualization(self, image, status, color, head_tilt, displacement_ratio):
+        h, w = image.shape[:2]
 
-    def _draw_status_label(self, image, status, color):
-        """Draw a professional, minimal status label."""
-        # Font settings
-        font_scale = 1.0
-        thickness = 2
+        # Increased panel dimensions
+        panel_height = 100  # Increased from 60
+        panel_margin = 20
+        panel_y = h - panel_height - panel_margin
 
-        # Get text size
-        label_size = cv2.getTextSize(status, self.font, font_scale, thickness)[0]
+        # Create semi-transparent overlay for the bottom panel
+        overlay = image.copy()
+        cv2.rectangle(overlay,
+                      (panel_margin, panel_y),
+                      (w - panel_margin, h - panel_margin),
+                      (0, 0, 0),
+                      cv2.FILLED)
 
-        # Calculate position (centered horizontally, lower part of screen)
-        center_x = image.shape[1] // 2
-        center_y = int(image.shape[0] * 0.85)  # Position at 85% from top
+        # Increased transparency
+        cv2.addWeighted(overlay, 0.8, image, 0.2, 0, image)
 
-        # Calculate rectangle coordinates with larger padding
-        padding_x = 30
-        padding_y = 15
-        rect_width = label_size[0] + (padding_x * 2)
-        rect_height = label_size[1] + (padding_y * 2)
+        # Left section: Posture Score with larger size
+        score_radius = 25  # Increased from 20
+        score_center = (panel_margin + score_radius + 20, panel_y + panel_height // 2)
 
-        rect_start = (
-            center_x - rect_width // 2,
-            center_y - rect_height // 2
-        )
-        rect_end = (
-            center_x + rect_width // 2,
-            center_y + rect_height // 2
-        )
+        # Draw score circle
+        cv2.circle(image, score_center, score_radius, color, 2, cv2.LINE_AA)
 
-        # Draw filled rectangle background
-        cv2.rectangle(
-            image,
-            rect_start,
-            rect_end,
-            color,
-            -1,
-            lineType=cv2.LINE_AA
-        )
+        # Larger score text
+        score_text = f"{int(self.posture_score)}"
+        score_size = cv2.getTextSize(score_text, self.font, 0.8, 2)[0]  # Increased from 0.6
+        cv2.putText(image, score_text,
+                    (score_center[0] - score_size[0] // 2, score_center[1] + score_size[1] // 2),
+                    self.font, 0.8, self.colors['text'], 2, cv2.LINE_AA)
 
-        # Draw white border
-        border_thickness = 2
-        cv2.rectangle(
-            image,
-            rect_start,
-            rect_end,
-            self.colors['white'],
-            border_thickness,
-            lineType=cv2.LINE_AA
-        )
+        # Middle section: Status and Feedback with larger text
+        text_x = score_center[0] + score_radius + 40
+        status_y = panel_y + 35
+        feedback_y = status_y + 30
 
-        # Draw text
-        text_x = center_x - label_size[0] // 2
-        text_y = center_y + label_size[1] // 4
-        cv2.putText(
-            image,
-            status,
-            (text_x, text_y),
-            self.font,
-            font_scale,
-            self.colors['white'],
-            thickness,
-            lineType=cv2.LINE_AA
-        )
+        cv2.putText(image, status,
+                    (text_x, status_y),
+                    self.font, 0.8, color, 2, cv2.LINE_AA)  # Increased from 0.6
+
+        # Add detailed feedback
+        feedback = self._get_posture_feedback(head_tilt, displacement_ratio)
+        cv2.putText(image, feedback,
+                    (text_x, feedback_y),
+                    self.font, 0.6, self.colors['secondary_text'], 1, cv2.LINE_AA)
 
     def _calculate_angle(self, a, b, c):
         a, b, c = np.array(a), np.array(b), np.array(c)
@@ -194,3 +168,11 @@ class PostureDetector:
 
     def __del__(self):
         self.pose.close()
+
+    def _get_posture_feedback(self, head_tilt, displacement_ratio):
+        if head_tilt > self.angle_threshold:
+            return "Please align your head with shoulders"
+        elif displacement_ratio > self.displacement_threshold:
+            return "Maintain upright posture"
+        else:
+            return "Good posture maintained"

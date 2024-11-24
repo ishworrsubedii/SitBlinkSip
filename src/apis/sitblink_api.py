@@ -46,10 +46,8 @@ active_connections = set()
 async def websocket_endpoint(websocket: WebSocket, posture: bool = False, eye_blink: bool = False):
     await websocket.accept()
     active_connections.add(websocket)
-
-    if not (posture or eye_blink):
-        await websocket.send_json({"message": "Please select either posture or eye_blink or both."})
-        return
+    pipeline.validate(posture, eye_blink)
+    pipeline.start()
 
     try:
         while True:
@@ -84,20 +82,17 @@ async def websocket_endpoint(websocket: WebSocket, posture: bool = False, eye_bl
         print(f"Error: {str(e)}")
     finally:
         active_connections.remove(websocket)
+        pipeline.stop()
 
 
 async def eye_blink_detection():
-    while True:
-        processed_frame = pipeline.eye_blink_detection()
-
-        return processed_frame
+    processed_frame = pipeline.eye_blink_detection()
+    return processed_frame
 
 
 async def posture_detection():
-    while True:
-        processed_frame = pipeline.posture_detection()
-
-        return processed_frame
+    processed_frame = pipeline.posture_detection()
+    return processed_frame
 
 
 async def convert_frame_to_webp_base64(frame: np.ndarray) -> str:
