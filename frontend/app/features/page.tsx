@@ -5,9 +5,32 @@ import Footer from "@/components/ui/footer";
 import Link from "next/link";
 
 export const metadata = {
-  title: 'SitBlinkSip - Transform Your Workspace Health',
-  description: 'Intelligent tools to optimize posture, eye care, hydration, and more for a healthier work experience.',
-  keywords: 'workplace wellness, posture tracking, eye protection, hydration reminders, digital health, office health',
+  title: 'Health Monitoring Features - Posture Detection & Eye Care',
+  description: 'Advanced features for workplace wellness including AI posture detection, eye strain prevention, and hydration tracking. Transform your digital health with smart monitoring.',
+  keywords: [
+    'posture detection features',
+    'eye strain prevention',
+    'workplace wellness features',
+    'health monitoring tools',
+    'ergonomic workspace',
+    'computer vision syndrome prevention',
+    'AI health tracking',
+    'blink rate monitoring',
+    'hydration tracking',
+    'workplace health analytics'
+  ],
+  openGraph: {
+    title: 'Digital Health Monitoring Features - SitBlinkSip',
+    description: 'Comprehensive workplace wellness features including AI posture detection, eye strain prevention, and health analytics.',
+    images: [
+      {
+        url: 'https://sitblinksip.com/images/features-preview.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'SitBlinkSip Features Overview'
+      }
+    ]
+  }
 };
 
 const SitBlinkSipFeatures = () => {

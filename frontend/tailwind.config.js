@@ -63,7 +63,10 @@ export default {
         'code-8': 'code-8 5s ease-in-out forwards',
         'code-9': 'code-9 5s ease-in-out forwards',
         'code-10': 'code-10 5s ease-in-out forwards',
-      }
+      },
+      aspectRatio: {
+        'video': '16 / 9',
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],

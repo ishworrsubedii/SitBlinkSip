@@ -1,6 +1,5 @@
 "use client";
 
-
 import React, { useState } from 'react';
 import { ChevronDown, MessageCircle, Zap, Shield, Clock, HelpCircle } from 'lucide-react';
 import PageIllustration from '@/components/page-illustration';
@@ -8,6 +7,24 @@ import Header from '@/components/ui/header';
 import Footer from '@/components/ui/footer';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import Script from 'next/script';
+
+// Structured data for FAQ
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is SitBlinkSip?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SitBlinkSip is an AI-powered health monitoring software that uses your device's camera to analyze sitting posture and eye blink frequency. It provides gentle reminders to improve posture and eye health, helping prevent eye strain and maintain proper ergonomics."
+      }
+    },
+    // Add more FAQ items based on your faqs array
+  ]
+};
 
 const FAQPage = () => {
   const faqs = [
@@ -16,8 +33,16 @@ const FAQPage = () => {
       icon: <Zap className="w-5 h-5" />,
       questions: [
         {
+          question: "What is SitBlinkSip?",
+          answer: "SitBlinkSip is health monitoring software that uses your device's camera to analyze your sitting posture and eye blink frequency. It provides gentle reminders to improve posture and eye health, helping to prevent eye strain and dryness. The software also suggests exercises and sends notifications to support better overall health."
+        },
+        {
+          question:"Does SitBlinkSip require any special equipment?",
+          answer: "No, you only need a device with a camera (laptop or desktop computer) and a stable internet connection. Our software works with most modern web browsers including Chrome, Firefox, and Safari. No additional hardware is required."
+        },
+        {
           question: "How does the posture monitoring system work?",
-          answer: "Our AI-powered system uses your device's camera to analyze your sitting position in real-time. It tracks key points on your body and provides gentle reminders when it detects poor posture. All processing is done locally on your device to ensure privacy."
+          answer: "Our AI-powered system uses your device's camera to analyze your sitting position in real-time. It tracks key points on your body and provides gentle reminders when it detects poor posture. All processing is done on realtime without saving any data to our servers to ensure privacy."
         },
         {
           question: "What equipment do I need to get started?",
@@ -109,6 +134,9 @@ const FAQPage = () => {
         </div>
       </main>
       <Footer />
+      <Script id="faq-schema" type="application/ld+json">
+        {JSON.stringify(structuredData)}
+      </Script>
     </div>
   );
 };

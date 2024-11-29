@@ -13,15 +13,18 @@ import cv2
 import numpy as np
 from PIL import Image
 from fastapi.routing import APIRouter
-from fastapi import WebSocket
+from fastapi import WebSocket, Body, HTTPException
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
+from typing import Dict
+from redis.exceptions import ConnectionError
 
 from src.models.models import initialize_database
 from src.pipeline.main_pipeline import SitBlinkSipPipeline
 from fastapi.responses import StreamingResponse
 
 from src.utils.utils import config_reader
+from src.utils.queue_manager import CameraQueueManager
 
 pipeline = SitBlinkSipPipeline()
 db = initialize_database()
@@ -33,30 +36,64 @@ eye_blink_det_dir = config['frame_save']['eye_blink_det_dir']
 posture_det_dir = config['frame_save']['posture_det_dir']
 output_dir = config['frame_save']['output_dir']
 
+queue_manager = CameraQueueManager()
+
 
 class StreamRequest(BaseModel):
-    posture: bool = False
-    eye_blink: bool = False
+    settings: Dict[str, bool]
+    user_id: str
 
 
 active_connections = set()
 
 
-@sit_blink_router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, posture: bool = False, eye_blink: bool = False):
-    await websocket.accept()
-    active_connections.add(websocket)
-    pipeline.validate(posture, eye_blink)
-    pipeline.start()
-
+@sit_blink_router.post("/start-camera-session")
+async def start_camera_session(request: StreamRequest):
     try:
+        session = await queue_manager.create_session(
+            request.user_id,
+            request.settings
+        )
+        return {
+            "status": "success",
+            "session": session
+        }
+    except ConnectionError:
+        raise HTTPException(
+            status_code=503,
+            detail="Session service temporarily unavailable. Please try again later."
+        )
+
+
+@sit_blink_router.websocket("/ws/{user_id}")
+async def websocket_endpoint(
+    websocket: WebSocket,
+    user_id: str,
+    posture: bool = False,
+    eye_blink: bool = False
+):
+    session = await queue_manager.get_session(user_id)
+    if not session:
+        await websocket.close(code=4000, reason="No active session found")
+        return
+
+    await websocket.accept()
+    await queue_manager.update_session(user_id, "active")
+    
+    try:
+        pipeline.validate(
+            session['settings']['posture'],
+            session['settings']['eye_blink']
+        )
+        pipeline.start()
+
         while True:
             frame_data = await websocket.receive_bytes()
             frame = cv2.imdecode(np.frombuffer(frame_data, np.uint8), cv2.IMREAD_COLOR)
 
             frame_response = {}
 
-            if eye_blink:
+            if session['settings']['eye_blink']:
                 processed_frame_eye_blink, ear, blink = pipeline.blink_detector.process_frame(frame)
                 if processed_frame_eye_blink is not None:
                     frame_response["eye_blink_image"] = await convert_frame_to_webp_base64(processed_frame_eye_blink)
@@ -65,7 +102,7 @@ async def websocket_endpoint(websocket: WebSocket, posture: bool = False, eye_bl
                         "blink": blink
                     }
 
-            if posture:
+            if session['settings']['posture']:
                 processed_frame_posture, head_tilt, displacement_ratio, posture_status = pipeline.posture_detector.process_frame(frame)
                 if processed_frame_posture is not None:
                     frame_response["posture_image"] = await convert_frame_to_webp_base64(processed_frame_posture)
@@ -81,7 +118,7 @@ async def websocket_endpoint(websocket: WebSocket, posture: bool = False, eye_bl
     except Exception as e:
         print(f"Error: {str(e)}")
     finally:
-        active_connections.remove(websocket)
+        await queue_manager.update_session(user_id, "inactive")
         pipeline.stop()
 
 
@@ -158,3 +195,20 @@ async def get_eye_data(minutes: int = 20):
         return {"data": data}
     except Exception as e:
         return {"message": f"Error: {e}"}
+
+
+@sit_blink_router.get("/session/{session_id}")
+async def get_session(session_id: str):
+    try:
+        session = await queue_manager.get_session(session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found")
+        return {
+            "status": "success",
+            "session": session
+        }
+    except ConnectionError:
+        raise HTTPException(
+            status_code=503,
+            detail="Session service unavailable"
+        )

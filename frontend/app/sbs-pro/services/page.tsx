@@ -11,6 +11,37 @@ import { Separator } from '@/components/ui/separator';
 import { Camera, Eye, ShieldCheck, Waves, Video, Play, Square, Settings, Loader2, Brain, AlertCircle, Activity } from 'lucide-react';
 import { API_URL, WS_URL } from '@/lib/constants';
 import { apiClient, ApiError } from '@/lib/api-client';
+import { cameraService, type CameraSession } from './cameraService';
+
+const STORAGE_KEYS = {
+  CAMERA_SESSION: 'camera_session',
+  MONITOR_SETTINGS: 'monitor_settings',
+  CAMERA_ID: 'selected_camera',
+  IS_STREAMING: 'is_streaming',
+  WATER_BREAK: 'water_break_settings',
+  PIPELINE_STATE: 'pipeline_state',
+  EYE_BLINK_DATA: 'eye_blink_data',
+  POSTURE_DATA: 'posture_data',
+  IS_PIPELINE_ACTIVE: 'is_pipeline_active'
+};
+
+const saveToStorage = (key: string, value: any) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error(`Failed to save ${key} to storage:`, error);
+  }
+};
+
+const getFromStorage = (key: string) => {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
+  } catch (error) {
+    console.error(`Failed to get ${key} from storage:`, error);
+    return null;
+  }
+};
 
 const WellnessMonitor = () => {
   // Camera states
@@ -49,6 +80,9 @@ const WellnessMonitor = () => {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [lastMessage, setLastMessage] = useState<MessageEvent | null>(null);
 
+  // Add new session state
+  const [session, setSession] = useState<CameraSession | null>(null);
+
   // Get available cameras
   useEffect(() => {
     async function getCameras() {
@@ -74,154 +108,191 @@ const WellnessMonitor = () => {
     }
 
     if (isCameraActive) {
-        // Stop the camera
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => {
-                track.stop();
-            });
-            streamRef.current = null;
-        }
-        if (videoRef.current) {
-            videoRef.current.srcObject = null;
-        }
-        setIsCameraActive(false);
+      // Stop all monitoring first if active
+      if (isStreaming || isPipelineActive) {
+        await cameraService.stopBackgroundMonitoring();
+        stopStreaming();
+        setIsPipelineActive(false);
+      }
+
+      cleanup();
     } else {
-        try {
-            setIsInitializing(true);
-            setIsCameraActive(true);
-            
-            console.log('Attempting to access camera...');
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    deviceId: selectedCamera ? { exact: selectedCamera } : undefined
-                }
-            }).catch(error => {
-                if (error.name === 'NotAllowedError') {
-                    throw new Error('Camera access denied. Please allow camera access in your browser settings.');
-                }
-                throw error;
-            });
-            
-            streamRef.current = stream;
-            
-            if (videoRef.current) {
-                console.log('Setting video source...');
-                videoRef.current.srcObject = stream;
-                // Wait for video to be ready
-                await new Promise((resolve) => {
-                    videoRef.current!.onloadedmetadata = () => {
-                        videoRef.current!.play()
-                            .then(resolve)
-                            .catch(err => console.error('Error playing video:', err));
-                    };
-                });
-                console.log('Video ready for capture');
-            }
-        } catch (error) {
-            console.error('Error accessing the camera:', error);
-            toast.error(error instanceof Error ? error.message : 'Failed to start camera preview');
-            setIsCameraActive(false);
-        } finally {
-            setIsInitializing(false);
-        }
+      try {
+        setIsInitializing(true);
+        await initializeCamera(selectedCamera);
+        saveToStorage('camera_active', true);
+        saveToStorage(STORAGE_KEYS.CAMERA_ID, selectedCamera);
+      } catch (error) {
+        toast.error('Failed to start camera preview');
+      } finally {
+        setIsInitializing(false);
+      }
     }
-};
+  };
 
   // Cleanup effect
   useEffect(() => {
     return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => {
-          track.stop();
-        });
-      }
+      cleanup();
     };
   }, []);
 
+  const cleanup = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => {
+        track.stop();
+        track.enabled = false;
+      });
+      streamRef.current = null;
+    }
+    
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    
+    if (ws) {
+      ws.close();
+      setWs(null);
+    }
+
+    setIsCameraActive(false);
+    setIsStreaming(false);
+    setIsPipelineActive(false);
+    setImageData(null);
+    
+    // Clear only specific storage items
+    localStorage.removeItem(STORAGE_KEYS.IS_STREAMING);
+    localStorage.removeItem(STORAGE_KEYS.CAMERA_SESSION);
+    localStorage.removeItem('camera_active');
+  };
+
   // Handle stream control
   const toggleStream = async () => {
-    // Add validation checks at the start
-    if (!selectedCamera) {
-      toast.error('Please select a camera first');
+    if (!selectedCamera || (!monitorPosture && !monitorEyeBlink)) {
+      toast.error('Please select monitoring options and camera');
       return;
     }
 
-    if (!isCameraActive) {
-      toast.error('Please start the camera preview first');
+    if (!isCameraActive || !streamRef.current) {
+      toast.error('Please start camera preview first');
       return;
     }
 
-    if (!monitorPosture && !monitorEyeBlink) {
-      toast.error('Please enable at least one monitoring option (Posture or Eye Blink)');
-      return;
-    }
+    try {
+      setIsLoading(true);
 
-    if (!isStreaming) {
-      const newWs = new WebSocket(`${WS_URL}/ws?posture=${monitorPosture}&eye_blink=${monitorEyeBlink}`);
-      
-      await new Promise((resolve, reject) => {
+      if (!isStreaming) {
+        const session = await cameraService.startBackgroundMonitoring({
+          posture: monitorPosture,
+          eye_blink: monitorEyeBlink
+        });
+        
+        setSession(session);
+        saveToStorage(STORAGE_KEYS.CAMERA_SESSION, session);
+        saveToStorage(STORAGE_KEYS.IS_STREAMING, true);
+        saveToStorage(STORAGE_KEYS.MONITOR_SETTINGS, {
+          posture: monitorPosture,
+          eye_blink: monitorEyeBlink
+        });
+        saveToStorage(STORAGE_KEYS.IS_PIPELINE_ACTIVE, true);
+        
+        const newWs = cameraService.createWebSocket(session.user_id);
+        
         newWs.onopen = () => {
-          toast.success('Connected to server');
-          resolve(true);
+          toast.success('Connected to monitoring service');
+          startFrameCapture(newWs);
         };
 
-        newWs.onmessage = (event) => setLastMessage(event);
-        newWs.onerror = (error) => reject(error);
-        newWs.onclose = () => stopStreaming();
-        setTimeout(() => reject(new Error('Connection timeout')), 5000);
-      });
-
-      setWs(newWs);
-      
-      const frameInterval = setInterval(() => {
-        if (!videoRef.current || !newWs || newWs.readyState !== WebSocket.OPEN) return;
-
-        const canvas = document.createElement('canvas');
-        // Match the target dimensions from backend
-        canvas.width = 1280;  // Increased for better quality
-        canvas.height = 720;
-        const ctx = canvas.getContext('2d');
-        
-        if (!ctx) return;
-
-        try {
-          // Draw maintaining aspect ratio
-          const videoAspect = videoRef.current.videoWidth / videoRef.current.videoHeight;
-          const canvasAspect = canvas.width / canvas.height;
-          let drawWidth = canvas.width;
-          let drawHeight = canvas.height;
-          let offsetX = 0;
-          let offsetY = 0;
-
-          if (videoAspect > canvasAspect) {
-            drawHeight = canvas.width / videoAspect;
-            offsetY = (canvas.height - drawHeight) / 2;
-          } else {
-            drawWidth = canvas.height * videoAspect;
-            offsetX = (canvas.width - drawWidth) / 2;
+        newWs.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            setLastMessage(event);
+            
+            if (data.eye_blink_image) {
+              setImageData(data.eye_blink_image);
+              setEyeBlinkFrame(data.eye_blink_image);
+              saveToStorage(STORAGE_KEYS.EYE_BLINK_DATA, data.eye_blink_image);
+            }
+            if (data.posture_image) {
+              setImageData(data.posture_image);
+              setPostureFrame(data.posture_image);
+              saveToStorage(STORAGE_KEYS.POSTURE_DATA, data.posture_image);
+            }
+            
+            // Save pipeline state
+            saveToStorage(STORAGE_KEYS.PIPELINE_STATE, {
+              active: true,
+              imageData: data.eye_blink_image || data.posture_image
+            });
+          } catch (error) {
+            console.error('Error processing message:', error);
           }
+        };
 
-          ctx.fillStyle = '#000000';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(videoRef.current, offsetX, offsetY, drawWidth, drawHeight);
-          
-          canvas.toBlob(
-            (blob) => {
-              if (blob && newWs.readyState === WebSocket.OPEN) {
-                newWs.send(blob);
-              }
-            },
-            'image/jpeg',
-            0.85  // Increased quality
-          );
-        } catch (error) {
-          console.error('Frame capture error:', error);
-        }
-      }, 100);
-
-      setFrameIntervalId(frameInterval);
-      setIsStreaming(true);
+        setWs(newWs);
+        setIsStreaming(true);
+      } else {
+        await cameraService.stopBackgroundMonitoring();
+        stopStreaming();
+        saveToStorage(STORAGE_KEYS.IS_PIPELINE_ACTIVE, false);
+      }
+    } catch (error) {
+      toast.error('Failed to toggle monitoring');
+      console.error('Monitoring error:', error);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  // Update the frame capture function
+  const startFrameCapture = (websocket: WebSocket) => {
+    if (!videoRef.current) return;
+
+    const frameInterval = setInterval(() => {
+      if (!videoRef.current || websocket.readyState !== WebSocket.OPEN) return;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 1280;
+      canvas.height = 720;
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) return;
+
+      try {
+        const videoAspect = videoRef.current.videoWidth / videoRef.current.videoHeight;
+        const canvasAspect = canvas.width / canvas.height;
+        let drawWidth = canvas.width;
+        let drawHeight = canvas.height;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        if (videoAspect > canvasAspect) {
+          drawHeight = canvas.width / videoAspect;
+          offsetY = (canvas.height - drawHeight) / 2;
+        } else {
+          drawWidth = canvas.height * videoAspect;
+          offsetX = (canvas.width - drawWidth) / 2;
+        }
+
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(videoRef.current, offsetX, offsetY, drawWidth, drawHeight);
+        
+        canvas.toBlob(
+          (blob) => {
+            if (blob && websocket.readyState === WebSocket.OPEN) {
+              websocket.send(blob);
+            }
+          },
+          'image/jpeg',
+          0.85
+        );
+      } catch (error) {
+        console.error('Frame capture error:', error);
+      }
+    }, 100);
+
+    setFrameIntervalId(frameInterval);
   };
 
   // Handle water break notifications
@@ -360,17 +431,18 @@ const WellnessMonitor = () => {
 
   // Add this function to handle stopping the stream
   const stopStreaming = () => {
-    console.log('Stopping stream...');
-    setIsStreaming(false);
-    if (frameIntervalId) {
-      clearInterval(frameIntervalId);
-      setFrameIntervalId(null);
-    }
     if (ws) {
       ws.close();
       setWs(null);
     }
-    console.log('Stream stopped');
+    setIsStreaming(false);
+    setSession(null);
+    setImageData(null);
+    
+    // Clear monitoring settings
+    localStorage.removeItem('monitoring_active');
+    localStorage.removeItem('monitor_settings');
+    localStorage.removeItem('camera_session_id');
   };
 
   // Add these state variables
@@ -504,6 +576,198 @@ const WellnessMonitor = () => {
         toast.error('Backend service is not responding. Some features may be unavailable.');
     }
   }, [backendStatus]);
+
+  // Add a new function to handle session restoration
+  const restoreSession = async () => {
+    try {
+      // Restore monitor settings
+      const settings = getFromStorage(STORAGE_KEYS.MONITOR_SETTINGS);
+      if (settings) {
+        setMonitorPosture(settings.posture);
+        setMonitorEyeBlink(settings.eye_blink);
+      }
+
+      // Restore camera state
+      const savedCameraId = getFromStorage(STORAGE_KEYS.CAMERA_ID);
+      const wasActive = getFromStorage('camera_active');
+      const wasPipelineActive = getFromStorage(STORAGE_KEYS.IS_PIPELINE_ACTIVE);
+      
+      if (savedCameraId && wasActive) {
+        try {
+          // First restore camera preview
+          await initializeCamera(savedCameraId);
+          
+          // Then restore pipeline if it was active
+          if (wasPipelineActive) {
+            const savedSession = getFromStorage(STORAGE_KEYS.CAMERA_SESSION);
+            if (savedSession) {
+              setSession(savedSession);
+              setIsStreaming(true);
+              await resumeMonitoring(savedSession);
+            }
+          }
+
+          // Restore processed frames if available
+          const eyeBlinkData = getFromStorage(STORAGE_KEYS.EYE_BLINK_DATA);
+          const postureData = getFromStorage(STORAGE_KEYS.POSTURE_DATA);
+          
+          if (eyeBlinkData && settings?.eye_blink) {
+            setEyeBlinkFrame(eyeBlinkData);
+            setImageData(eyeBlinkData);
+          }
+          if (postureData && settings?.posture) {
+            setPostureFrame(postureData);
+            setImageData(postureData);
+          }
+        } catch (error) {
+          console.error('Failed to restore camera:', error);
+          cleanup();
+        }
+      }
+    } catch (error) {
+      console.error('Session restoration failed:', error);
+      cleanup();
+    }
+  };
+
+  // Update the useEffect for page visibility
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        await restoreSession();
+      }
+    };
+
+    // Initial restoration when component mounts
+    restoreSession();
+
+    // Add visibility change listener
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  const initializeCamera = async (deviceId: string) => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId: { exact: deviceId },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      });
+      
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+      setIsCameraActive(true);
+      saveToStorage('camera_active', true);
+      saveToStorage(STORAGE_KEYS.CAMERA_ID, deviceId);
+    } catch (error) {
+      console.error('Failed to initialize camera:', error);
+      toast.error('Failed to restore camera preview');
+      throw error; // Propagate error for proper handling
+    }
+  };
+
+  const initializeWebSocket = (userId: string) => {
+    // Close existing connection if any
+    if (ws) {
+      ws.close();
+    }
+
+    const newWs = cameraService.createWebSocket(userId);
+    
+    newWs.onopen = () => {
+      console.log('WebSocket connected');
+      if (streamRef.current) {
+        startFrameCapture(newWs);
+      }
+    };
+
+    newWs.onclose = () => {
+      console.log('WebSocket closed, attempting reconnect...');
+      setTimeout(() => initializeWebSocket(userId), 1000);
+    };
+
+    newWs.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        setLastMessage(event);
+        
+        if (data.eye_blink_image && monitorEyeBlink) {
+          setImageData(data.eye_blink_image);
+        }
+        if (data.posture_image && monitorPosture) {
+          setImageData(data.posture_image);
+        }
+      } catch (error) {
+        console.error('Error processing message:', error);
+      }
+    };
+
+    setWs(newWs);
+  };
+
+  useEffect(() => {
+    return () => {
+      // Only cleanup if not monitoring
+      if (!localStorage.getItem('monitoring_active')) {
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+        }
+        if (ws) {
+          ws.close();
+        }
+      }
+    };
+  }, [ws]);
+
+  const resumeMonitoring = async (session: CameraSession) => {
+    try {
+      setIsLoading(true);
+      const newWs = cameraService.createWebSocket(session.user_id);
+      
+      newWs.onopen = () => {
+        toast.success('Monitoring service reconnected');
+        startFrameCapture(newWs);
+        setIsStreaming(true);
+        setIsPipelineActive(true);
+        saveToStorage(STORAGE_KEYS.IS_STREAMING, true);
+        saveToStorage(STORAGE_KEYS.IS_PIPELINE_ACTIVE, true);
+      };
+
+      newWs.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          setLastMessage(event);
+          
+          if (data.eye_blink_image) {
+            setImageData(data.eye_blink_image);
+            setEyeBlinkFrame(data.eye_blink_image);
+            saveToStorage(STORAGE_KEYS.EYE_BLINK_DATA, data.eye_blink_image);
+          }
+          if (data.posture_image) {
+            setImageData(data.posture_image);
+            setPostureFrame(data.posture_image);
+            saveToStorage(STORAGE_KEYS.POSTURE_DATA, data.posture_image);
+          }
+        } catch (error) {
+          console.error('Error processing message:', error);
+        }
+      };
+
+      setWs(newWs);
+    } catch (error) {
+      console.error('Failed to resume monitoring:', error);
+      cleanup();
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="h-[calc(100vh-4rem)] overflow-y-auto">
