@@ -2,6 +2,7 @@ import "./css/style.css";
 
 import { Inter } from "next/font/google";
 import { Toaster } from 'sonner';
+import { Metadata } from 'next';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -9,47 +10,30 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata = {
+export const metadata: Metadata = {
+  metadataBase: new URL('https://sitblinksip.tech'),
   title: {
-    default: "SitBlinkSip - AI-Powered Health Monitoring for Computer Users",
-    template: "%s | SitBlinkSip"
+    default: 'SitBlinkSip - Sit Right, Blink Bright, Sip Well',
+    template: '%s | SitBlinkSip'
   },
-  description: "AI-powered wellness assistant for proper posture detection, eye strain prevention, and hydration tracking. Prevent computer vision syndrome and maintain healthy work habits.",
-  keywords: [
-    "posture detection",
-    "eye strain prevention",
-    "blink detection",
-    "computer vision syndrome",
-    "workplace wellness",
-    "digital health monitoring",
-    "back pain prevention",
-    "eye health",
-    "hydration tracking",
-    "ergonomic workspace",
-    "AI health assistant",
-    "workplace ergonomics"
-  ],
-  authors: [{ name: "SitBlinkSip" }],
-  creator: "SitBlinkSip",
-  publisher: "SitBlinkSip",
+  description: 'Sit Right, Blink Bright, Sip Well - SitBlinkSip helps you maintain good posture, prevent eye strain, and stay hydrated while working. Get real-time feedback and wellness reminders.',
+  keywords: ['Sit Right', 'Blink Bright', 'Sip Well', 'workplace wellness', 'posture correction', 'eye strain prevention', 'hydration reminders', 'office health', 'wellness app', 'ergonomic tips', 'eye care', 'hydration', 'muscle health', 'cognitive performance', 'workplace productivity','personal chatbot','ergonomic tips','eye care','hydration','muscle health','cognitive performance','workplace productivity','personal chatbot'],
+  authors: [{ name: 'SitBlinkSip Team' }],
+  creator: 'SitBlinkSip',
+  publisher: 'SitBlinkSip',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://sitblinksip.vercel.app",
-    title: "SitBlinkSip - AI-Powered Health Monitoring for Computer Users",
-    description: "Prevent computer vision syndrome and maintain healthy work habits with AI-powered wellness monitoring.",
-    siteName: "SitBlinkSip"
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "SitBlinkSip - AI-Powered Health Monitoring",
-    description: "Prevent computer vision syndrome and maintain healthy work habits with AI-powered wellness monitoring.",
-    creator: "@sitblinksip"
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
   },
   robots: {
     index: true,
@@ -63,8 +47,8 @@ export const metadata = {
     },
   },
   verification: {
-    google: "your-google-verification-code",
-  }
+    google: 'your-google-site-verification',
+  },
 };
 
 export default function RootLayout({

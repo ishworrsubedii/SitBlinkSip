@@ -5,6 +5,28 @@ import Header from '@/components/ui/header';
 import Footer from '@/components/ui/footer';
 import { Badge } from "@/components/ui/badge";
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Blog - Sit Right, Blink Bright, Sip Well | SitBlinkSip',
+  description: 'Discover evidence-based articles about posture, eye care, and workplace wellness. Learn how to Sit Right, Blink Bright, and Sip Well for better health.',
+  openGraph: {
+    title: 'Blog - Health & Wellness Tips | SitBlinkSip',
+    description: 'Discover evidence-based articles about posture, eye care, and workplace wellness. Read the latest research and tips for maintaining health while working.',
+    url: 'https://sitblinksip.tech/blog',
+    siteName: 'SitBlinkSip',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Blog - Health & Wellness Tips | SitBlinkSip',
+    description: 'Discover evidence-based articles about posture, eye care, and workplace wellness.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  }
+};
 
 const BlogPage = () => {
   const blogs = [

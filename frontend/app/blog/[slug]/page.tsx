@@ -1,10 +1,9 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen, Link2, AlertCircle } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Metadata } from 'next';
 
 // Define types for the blog content
 type ContentSection = {
@@ -227,6 +226,42 @@ const blogPosts: Record<string, BlogPost> = {
     ]
   }
 };
+
+// Add metadata generation function
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = blogPosts[params.slug as keyof typeof blogPosts];
+
+  if (!post) {
+    return {
+      title: 'Post Not Found - SitBlinkSip',
+      description: 'The requested blog post could not be found.',
+    };
+  }
+
+  return {
+    title: `${post.title} - SitBlinkSip`,
+    description: post.content[0].content,
+    openGraph: {
+      title: post.title,
+      description: post.content[0].content,
+      url: `https://sitblinksip.tech/blog/${params.slug}`,
+      siteName: 'SitBlinkSip',
+      type: 'article',
+      publishedTime: post.date,
+      authors: [post.author],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.content[0].content,
+    },
+    authors: [{ name: post.author }],
+    robots: {
+      index: true,
+      follow: true,
+    }
+  };
+}
 
 export default function BlogPost({ params }: { params: { slug: string } }) {
   const post = blogPosts[params.slug as keyof typeof blogPosts];

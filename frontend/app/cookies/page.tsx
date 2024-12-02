@@ -1,8 +1,29 @@
-'use client';
-
-import { Card } from '@/components/ui/card';
-import { ArrowLeft, Shield } from 'lucide-react';
+import React from 'react';
 import Link from 'next/link';
+import { ArrowLeft, Shield } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Cookie Policy | SitBlinkSip',
+  description: 'Learn about how SitBlinkSip uses cookies to enhance your browsing experience and protect your privacy.',
+  openGraph: {
+    title: 'Cookie Policy | SitBlinkSip',
+    description: 'Learn about how SitBlinkSip uses cookies to enhance your browsing experience and protect your privacy.',
+    url: 'https://sitblinksip.tech/cookies',
+    siteName: 'SitBlinkSip',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Cookie Policy | SitBlinkSip',
+    description: 'Learn about how SitBlinkSip uses cookies to enhance your browsing experience.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  }
+};
 
 export default function CookiesPage() {
   return (
