@@ -1,13 +1,15 @@
 import React from 'react';
-import { ArrowRight, Monitor, EyeIcon } from 'lucide-react';
+import { ArrowRight, Monitor, EyeIcon, Droplet } from 'lucide-react';
 import PageIllustration from '@/components/page-illustration';
 import Header from '@/components/ui/header';
 import Footer from '@/components/ui/footer';
 import { Badge } from "@/components/ui/badge";
+import Link from 'next/link';
 
 const BlogPage = () => {
   const blogs = [
     {
+      slug: 'maintaining-proper-posture',
       icon: <Monitor className="w-8 h-8 text-blue-500" />,
       title: "Maintaining Proper Posture",
       category: "Ergonomics",
@@ -16,12 +18,22 @@ const BlogPage = () => {
       date: "Apr 15, 2024"
     },
     {
+      slug: 'eye-care-digital-age',
       icon: <EyeIcon className="w-8 h-8 text-blue-500" />,
       title: "Eye Care in Digital Age",
       category: "Health",
       description: "Understanding the importance of regular eye movement and blinking patterns while working with screens. Get practical tips for reducing eye strain and maintaining eye health.",
       readTime: "4 min read",
       date: "Apr 14, 2024"
+    },
+    {
+      slug: 'hydration-workplace-wellness',
+      icon: <Droplet className="w-8 h-8 text-blue-500" />,
+      title: "Hydration and Workplace Wellness",
+      category: "Wellness",
+      description: "Explore the critical role of hydration in maintaining cognitive function and physical well-being during work hours. Learn strategies to ensure optimal hydration.",
+      readTime: "6 min read",
+      date: "Apr 13, 2024"
     }
   ];
 
@@ -66,6 +78,7 @@ const BlogPage = () => {
 };
 
 const BlogCard = ({ 
+  slug,
   icon, 
   title, 
   category, 
@@ -73,6 +86,7 @@ const BlogCard = ({
   readTime, 
   date 
 }: {
+  slug: string;
   icon: React.ReactNode;
   title: string;
   category: string;
@@ -107,10 +121,10 @@ const BlogCard = ({
 
         {/* Footer */}
         <div className="pt-4 border-t border-slate-100">
-          <button className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors">
+          <Link href={`/blog/${slug}`} className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors">
             Read Article
             <ArrowRight className="w-4 h-4 ml-2" />
-          </button>
+          </Link>
         </div>
       </div>
     </div>

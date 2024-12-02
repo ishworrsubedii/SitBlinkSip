@@ -53,7 +53,7 @@ export default function Cta() {
                 </a>
                 <a
                   className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg border border-gray-700 bg-gray-800/50 px-6 sm:px-8 py-3 text-gray-200 backdrop-blur-sm transition-colors hover:border-blue-500 hover:text-blue-400"
-                  href="/demo"
+                  href="/preview"
                 >
                   Watch Demo
                   <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
