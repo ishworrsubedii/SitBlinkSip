@@ -1,8 +1,9 @@
 import "./css/style.css";
+import "./globals.css";
 
 import { Inter } from "next/font/google";
 import { Toaster } from 'sonner';
-import { Metadata } from 'next';
+import { Metadata, Viewport } from 'next';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,12 +29,18 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.ico',
-    apple: '/apple-icon.png',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
+  openGraph: {
+    title: 'SitBlinkSip - Sit Right, Blink Bright, Sip Well',
+    description: 'SitBlinkSip helps you maintain good posture, prevent eye strain, and stay hydrated while working. Get real-time feedback and wellness reminders.',
+    url: 'https://sitblinksip.tech',
+    siteName: 'SitBlinkSip',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SitBlinkSip - Sit Right, Blink Bright, Sip Well',
+    description: 'SitBlinkSip helps you maintain good posture, prevent eye strain, and stay hydrated while working.',
   },
   robots: {
     index: true,
@@ -46,9 +53,12 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: 'your-google-site-verification',
-  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({

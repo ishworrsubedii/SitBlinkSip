@@ -1,7 +1,5 @@
 import Image from "next/image";
 import WorkspaceImg from "@/public/images/workspace-monitor.png";
-import EyeTrackingOverlay from "@/public/images/eye-tracking-overlay.svg";
-import PostureIndicator from "@/public/images/posture-indicator.svg";
 
 export default function FeaturesPlanet() {
   return (
@@ -90,7 +88,7 @@ export default function FeaturesPlanet() {
             </div>
           </div>
           {/* Grid */}
-          <div className="grid gap-4 sm:gap-6 overflow-hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:gap-6 overflow-hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <article className="p-4 sm:p-6">
               <h3 className="mb-2 flex items-center space-x-2 font-medium text-gray-200 text-sm sm:text-base">
                 <svg className="fill-blue-500" xmlns="http://www.w3.org/2000/svg" width={16} height={16}>
@@ -133,29 +131,6 @@ export default function FeaturesPlanet() {
               </h3>
               <p className="text-[13px] sm:text-[15px] text-gray-400">
                 View your health metrics through intuitive charts and graphs, making it easy to track improvements over time.
-              </p>
-            </article>
-            <article className="p-4 sm:p-6">
-              <h3 className="mb-2 flex items-center space-x-2 font-medium text-gray-200 text-sm sm:text-base">
-                <svg className="fill-blue-500" xmlns="http://www.w3.org/2000/svg" width={16} height={16}>
-                  <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm-.5-4.5c0 .3.2.5.5.5s.5-.2.5-.5V8c0-.3-.2-.5-.5-.5s-.5.2-.5.5v1.5zM8 5c-.6 0-1 .4-1 1s.4 1 1 1 1-.4 1-1-.4-1-1-1z" />
-                </svg>
-                <span>AI Assistant</span>
-              </h3>
-              <p className="text-[13px] sm:text-[15px] text-gray-400">
-                Coming soon: Get personalized health tips and insights from our AI assistant based on your usage patterns.
-              </p>
-            </article>
-            <article className="p-4 sm:p-6">
-              <h3 className="mb-2 flex items-center space-x-2 font-medium text-gray-200 text-sm sm:text-base">
-                <svg className="fill-blue-500" xmlns="http://www.w3.org/2000/svg" width={16} height={16}>
-                  <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
-                  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" />
-                </svg>
-                <span>Workspace Analysis</span>
-              </h3>
-              <p className="text-[13px] sm:text-[15px] text-gray-400">
-                Coming soon: Monitor lighting conditions and screen distance to optimize your workspace for eye health.
               </p>
             </article>
           </div>

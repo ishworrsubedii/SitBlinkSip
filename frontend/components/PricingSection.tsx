@@ -117,7 +117,7 @@ export default function PricingSection({
                         </li>
                       ))}
                     </ul>
-                    <Link href="/waitlist" passHref>
+                    <Link href="/pricing#join" passHref>
                       <button className={`w-full py-3 px-4 rounded-lg font-medium mt-4 ${
                         plan.isPopular
                           ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
