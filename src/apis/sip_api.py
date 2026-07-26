@@ -8,7 +8,7 @@ from datetime import datetime
 import asyncio
 import sqlite3
 
-sip_db = "sip.db"
+sip_db = "data/sip.db"
 
 sip_router = APIRouter(tags=["SIP"])
 
@@ -25,9 +25,9 @@ async def send_water_notification(interval):
 
 @sip_router.post("/set_water_break_interval")
 async def set_water_break_interval(interval: int, background_tasks: BackgroundTasks):
-    conn = sqlite3.connect(sip_db)
     if interval <= 0:
         raise HTTPException(status_code=400, detail="Interval must be a positive integer.")
+    conn = sqlite3.connect(sip_db)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM intervals")
     cursor.execute("INSERT INTO intervals (interval) VALUES (?)", (interval,))

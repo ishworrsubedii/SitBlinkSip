@@ -30,7 +30,7 @@ class SitBlinkSipPipeline:
 
         self.blink_detector = BlinkDetector(
             shape_predictor_path=shape_predictor_path,
-            ear_threshold=0.2,
+            ear_threshold=0.15,
             ear_consec_frames_min=1,
             ear_consec_frames_max=3
         )
@@ -60,8 +60,8 @@ class SitBlinkSipPipeline:
                 del_directory(eye_blink_det_dir)
             if os.path.exists(posture_det_dir):
                 del_directory(posture_det_dir)
-            os.mkdir(eye_blink_det_dir)
-            os.mkdir(posture_det_dir)
+            os.makedirs(eye_blink_det_dir, exist_ok=True)
+            os.makedirs(posture_det_dir, exist_ok=True)
             self.output_folder = eye_blink_det_dir
 
 
@@ -69,14 +69,14 @@ class SitBlinkSipPipeline:
         elif posture:
             if os.path.exists(posture_det_dir):
                 del_directory(posture_det_dir)
-            os.mkdir(posture_det_dir)
+            os.makedirs(posture_det_dir, exist_ok=True)
             self.output_folder = posture_det_dir
 
 
         elif eye_blink:
             if os.path.exists(eye_blink_det_dir):
                 del_directory(eye_blink_det_dir)
-            os.mkdir(eye_blink_det_dir)
+            os.makedirs(eye_blink_det_dir, exist_ok=True)
             self.output_folder = eye_blink_det_dir
 
 
@@ -130,7 +130,7 @@ class SitBlinkSipPipeline:
                     frame = cv2.imread(file_path)
                     if frame is not None:
                         processed_frame, head_tilt, displacement_ratio, posture_status = self.posture_detector.process_frame(frame)
-                        self.db.insert_posture_data(head_tilt, displacement_ratio, posture_status)
+                        self.db.insert_posture_data(head_tilt, displacement_ratio, posture_status == "Good Posture")
                         latest_frame = processed_frame
                     
                     # Clean up processed file

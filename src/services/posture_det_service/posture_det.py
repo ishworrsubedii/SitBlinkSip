@@ -11,7 +11,7 @@ import os
 
 class PostureDetector:
     def __init__(self, angle_threshold=145.0, displacement_threshold=0.65, draw=True):
-        self.mp_pose = mp.solutions.pose
+        self.mp_pose = mp.solutions.pose    
         self.pose = self.mp_pose.Pose(
             min_detection_confidence=0.7,
             min_tracking_confidence=0.7,
