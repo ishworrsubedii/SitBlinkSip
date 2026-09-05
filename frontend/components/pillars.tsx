@@ -1,4 +1,4 @@
-import { Armchair, Eye, Droplets, ArrowRight } from "lucide-react";
+import { Armchair, Eye, Droplets } from "lucide-react";
 
 const pillars = [
   {
@@ -24,8 +24,6 @@ const pillars = [
     chip: "bg-violet-50",
     ring: "group-hover:ring-violet-100",
     bar: "bg-violet-500",
-    href: "#research",
-    linkLabel: "Why it matters",
   },
   {
     letter: "Sip",
@@ -57,6 +55,19 @@ export default function Pillars() {
               Long hours at a screen make it easy to forget your body. SitBlinkSip
               keeps an eye on three simple things so you don't have to.
             </p>
+            <p className="mt-3 text-xs text-slate-400">
+              Reduced blink rate during screen use is linked to dry-eye symptoms and
+              digital eye strain —{" "}
+              <a
+                href="https://pubmed.ncbi.nlm.nih.gov/33181547/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-slate-300 underline-offset-2 hover:text-blue-600"
+              >
+                see the research
+              </a>
+              .
+            </p>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-3">
@@ -84,15 +95,6 @@ export default function Pillars() {
                 <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600">
                   {pillar.description}
                 </p>
-                {pillar.href && (
-                  <a
-                    href={pillar.href}
-                    className={`mt-4 inline-flex items-center gap-1 text-sm font-semibold ${pillar.tint} transition-colors hover:underline`}
-                  >
-                    {pillar.linkLabel}
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                  </a>
-                )}
                 <div
                   className={`absolute bottom-0 left-6 right-6 h-0.5 scale-x-0 rounded-full ${pillar.bar} transition-transform duration-300 group-hover:scale-x-100`}
                 />

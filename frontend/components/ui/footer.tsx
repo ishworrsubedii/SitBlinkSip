@@ -7,7 +7,7 @@ import {
   Linkedin,
   Heart,
   HelpCircle,
-  LayoutDashboard,
+  Download,
   PresentationIcon,
 } from "lucide-react";
 
@@ -120,11 +120,11 @@ export default function Footer({ border = false }: { border?: boolean }) {
 
 // Link configurations
 const resourceLinks = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Download', href: '/#desktop', icon: Download },
   { label: 'Preview', href: '/preview', icon: PresentationIcon },
   { label: 'Blog', href: '/blog', icon: MessageCircle },
   { label: 'FAQ', href: '/faq', icon: HelpCircle },
-  { label: 'GitHub', href: 'https://github.com/ishworrsubedii/SitBlinkSip', icon: Github, external: true },
+  { label: 'GitHub', href: 'https://github.com/ishworrsubedii/desktop-sitblinksip', icon: Github, external: true },
 ];
 
 const socialLinks = [

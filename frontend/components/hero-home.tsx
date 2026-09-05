@@ -1,9 +1,9 @@
 "use client";
 
 import PageIllustration from "@/components/page-illustration";
-import { Armchair, Eye, Droplets, Github, LayoutDashboard, Circle } from "lucide-react";
+import { Armchair, Eye, Droplets, Github, Download, Circle } from "lucide-react";
 
-const GITHUB_URL = "https://github.com/ishworrsubedii/SitBlinkSip";
+const GITHUB_URL = "https://github.com/ishworrsubedii/desktop-sitblinksip";
 
 export default function HeroHome() {
   return (
@@ -52,10 +52,10 @@ export default function HeroHome() {
               >
                 <a
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 font-medium text-white shadow-sm transition-all duration-150 ease-in-out hover:bg-blue-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:w-auto"
-                  href="/dashboard"
+                  href="/#desktop"
                 >
-                  <LayoutDashboard className="h-4 w-4" />
-                  Open Dashboard
+                  <Download className="h-4 w-4" />
+                  Download Desktop App
                 </a>
                 <a
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-slate-100 px-6 font-medium text-slate-700 transition duration-150 ease-in-out hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 sm:w-auto"
@@ -93,23 +93,23 @@ export default function HeroHome() {
               <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-tr from-blue-100 via-white to-cyan-50 blur-2xl" />
 
               <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-2xl shadow-slate-900/10 transition-transform duration-300 [transform:perspective(1400px)_rotateY(-6deg)_rotateX(2deg)] hover:[transform:perspective(1400px)_rotateY(-2deg)_rotateX(1deg)] motion-reduce:[transform:none]">
-                {/* Browser chrome */}
+                {/* App window chrome */}
                 <div className="flex items-center gap-2 border-b border-gray-100 bg-gray-50 px-4 py-3">
                   <div className="flex gap-1.5">
                     <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
                     <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
                     <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                   </div>
-                  <div className="ml-2 flex-1 truncate rounded-md bg-white px-3 py-1 text-xs text-gray-400 ring-1 ring-inset ring-gray-200">
-                    localhost:3000/dashboard
+                  <div className="flex-1 text-center text-xs font-medium text-gray-400">
+                    SitBlinkSip Desktop — tray widget
                   </div>
                 </div>
 
-                {/* Mock dashboard */}
+                {/* Mock HUD widget */}
                 <div className="space-y-3 bg-slate-50 p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Live session
+                      Running in background
                     </span>
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-700">
                       <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500 motion-reduce:animate-none" />

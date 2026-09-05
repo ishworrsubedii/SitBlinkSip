@@ -20,28 +20,18 @@ export const metadata = {
 
 import Hero from "@/components/hero-home";
 import Pillars from "@/components/pillars";
-import FeaturesPlanet from "@/components/features-planet";
-import WhyBlinkMatters from "@/components/why-blink-matters";
 import HowItWorks from "@/components/how-it-works";
-import LargeTestimonial from "@/components/large-testimonial";
-import FutureVision from "@/components/future-vision";
+import DesktopDownload from "@/components/desktop-download";
 import OpenSource from "@/components/open-source";
-import DeveloperCredit from "@/components/developer-credit";
-import Cta from "@/components/cta";
 
 export default function Home() {
   return (
     <>
       <Hero />
       <Pillars />
-      <FeaturesPlanet />
-      <WhyBlinkMatters />
       <HowItWorks />
-      <LargeTestimonial />
-      <FutureVision />
+      <DesktopDownload />
       <OpenSource />
-      <DeveloperCredit />
-      <Cta />
     </>
   );
 }
