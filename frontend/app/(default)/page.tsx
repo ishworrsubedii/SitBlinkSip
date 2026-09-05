@@ -23,14 +23,17 @@ import Pillars from "@/components/pillars";
 import HowItWorks from "@/components/how-it-works";
 import DesktopDownload from "@/components/desktop-download";
 import OpenSource from "@/components/open-source";
+import { getDesktopDownloadCounts } from "@/lib/github";
 
-export default function Home() {
+export default async function Home() {
+  const downloadCounts = await getDesktopDownloadCounts();
+
   return (
     <>
       <Hero />
       <Pillars />
       <HowItWorks />
-      <DesktopDownload />
+      <DesktopDownload counts={downloadCounts} />
       <OpenSource />
     </>
   );

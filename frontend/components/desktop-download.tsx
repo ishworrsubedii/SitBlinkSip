@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Github,
 } from "lucide-react";
+import { formatDownloadCount, type DownloadCounts } from "@/lib/github";
 
 const RELEASES = "https://github.com/ishworrsubedii/desktop-sitblinksip/releases/latest/download";
 const RELEASES_PAGE = "https://github.com/ishworrsubedii/desktop-sitblinksip/releases";
@@ -60,7 +61,7 @@ function detectOS(): OS {
   return "macos";
 }
 
-export default function DesktopDownload() {
+export default function DesktopDownload({ counts }: { counts?: DownloadCounts | null }) {
   const [detected, setDetected] = useState<OS | null>(null);
 
   useEffect(() => {
@@ -88,6 +89,11 @@ export default function DesktopDownload() {
               that runs quietly in the background — nothing to host, nothing
               to keep open.
             </p>
+            {!!counts?.total && (
+              <p className="mt-3 text-sm font-medium text-slate-500">
+                {formatDownloadCount(counts.total)} downloads across macOS, Windows &amp; Linux
+              </p>
+            )}
           </div>
 
           <div className="mt-12 grid gap-5 sm:grid-cols-3">
@@ -141,6 +147,11 @@ export default function DesktopDownload() {
                   <p className="mt-3 text-xs leading-relaxed text-slate-500">
                     {build.note}
                   </p>
+                  {!!counts?.[os] && (
+                    <p className="mt-2 text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                      {formatDownloadCount(counts[os])} downloads
+                    </p>
+                  )}
                 </div>
               );
             })}
