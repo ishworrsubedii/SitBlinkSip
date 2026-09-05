@@ -23,6 +23,7 @@ import Pillars from "@/components/pillars";
 import FeaturesPlanet from "@/components/features-planet";
 import WhyBlinkMatters from "@/components/why-blink-matters";
 import HowItWorks from "@/components/how-it-works";
+import DesktopDownload from "@/components/desktop-download";
 import LargeTestimonial from "@/components/large-testimonial";
 import FutureVision from "@/components/future-vision";
 import OpenSource from "@/components/open-source";
@@ -37,6 +38,7 @@ export default function Home() {
       <FeaturesPlanet />
       <WhyBlinkMatters />
       <HowItWorks />
+      <DesktopDownload />
       <LargeTestimonial />
       <FutureVision />
       <OpenSource />

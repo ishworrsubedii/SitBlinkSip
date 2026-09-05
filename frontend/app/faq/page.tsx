@@ -38,7 +38,7 @@ const FAQPage = () => {
         },
         {
           question:"Does SitBlinkSip require any special equipment?",
-          answer: "No, you only need a device with a camera (laptop or desktop computer) and a stable internet connection. Our software works with most modern web browsers including Chrome, Firefox, and Safari. No additional hardware is required."
+          answer: "No, you only need a device with a camera. The web dashboard runs in any modern browser (Chrome, Firefox, Safari) with a stable internet connection — or, if you'd rather not keep a tab open, SitBlinkSip Desktop is a native app for Windows, macOS, and Linux that runs fully offline in the background. No additional hardware is required either way."
         },
         {
           question: "How does the posture monitoring system work?",
@@ -46,7 +46,7 @@ const FAQPage = () => {
         },
         {
           question: "What equipment do I need to get started?",
-          answer: "You only need a device with a camera (laptop or desktop computer) and a stable internet connection. Our software works with most modern web browsers including Chrome, Firefox, and Safari. No additional hardware is required."
+          answer: "Just a device with a camera. Use the web dashboard in any modern browser (Chrome, Firefox, Safari), or install SitBlinkSip Desktop — a native app for Windows, macOS, and Linux that needs no browser or internet connection once installed. No additional hardware is required either way."
         }
       ]
     },

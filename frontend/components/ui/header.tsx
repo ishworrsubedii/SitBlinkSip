@@ -16,6 +16,7 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "Features", href: "/#features" },
   { label: "How It Works", href: "/#how-it-works" },
+  { label: "Desktop App", href: "/#desktop" },
   { label: "Research", href: "/#research" },
 ];
 
