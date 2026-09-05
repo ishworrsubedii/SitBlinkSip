@@ -1,6 +1,6 @@
 import { Github, Star, GitFork, Linkedin, Twitter, Globe, Mail } from "lucide-react";
 
-const GITHUB_URL = "https://github.com/ishworrsubedii/SitBlinkSip";
+const GITHUB_URL = "https://github.com/ishworrsubedii/desktop-sitblinksip";
 
 const socials = [
   { label: "GitHub", href: "https://github.com/ishworrsubedii", icon: Github },
@@ -10,15 +10,7 @@ const socials = [
   { label: "Email", href: "mailto:ishworr.subedi@gmail.com", icon: Mail },
 ];
 
-const techStack = [
-  "Next.js",
-  "FastAPI",
-  "Python",
-  "OpenCV",
-  "MediaPipe",
-  "dlib",
-  "Docker",
-];
+const techStack = ["Python", "PySide6", "MediaPipe", "OpenCV", "NumPy", "pynput"];
 
 export default function OpenSource() {
   return (
@@ -44,8 +36,9 @@ export default function OpenSource() {
               Built in public. Built for developers.
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-slate-300">
-              SitBlinkSip is fully open source, Apache-2.0 licensed. Read the
-              code, learn how the monitoring works, or send a pull request.
+              SitBlinkSip Desktop is fully open source, Apache-2.0 licensed.
+              Read the code, learn how the on-device detection works, or send
+              a pull request.
             </p>
 
             <a
@@ -113,12 +106,14 @@ export default function OpenSource() {
                   {GITHUB_URL}.git
                 </p>
                 <p className="text-slate-200">
-                  <span className="text-emerald-400">$</span> cd SitBlinkSip
+                  <span className="text-emerald-400">$</span> cd desktop-sitblinksip
                 </p>
-                <p className="mt-4 text-slate-500"># run backend + frontend</p>
+                <p className="mt-4 text-slate-500"># run from source</p>
                 <p className="text-slate-200">
-                  <span className="text-emerald-400">$</span> docker compose up
-                  --build
+                  <span className="text-emerald-400">$</span> pip install -r requirements.txt
+                </p>
+                <p className="text-slate-200">
+                  <span className="text-emerald-400">$</span> python -m sitblinksip_desktop
                 </p>
                 <p className="mt-4 flex items-center gap-2 text-xs text-slate-500">
                   <Star className="h-3.5 w-3.5" /> Apache 2.0 Licensed

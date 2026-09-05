@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Logo from "./logo";
-import { Menu, Github, LayoutDashboard } from "lucide-react";
+import { Menu, Github, Download } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -17,7 +17,6 @@ const navLinks = [
   { label: "Features", href: "/#features" },
   { label: "How It Works", href: "/#how-it-works" },
   { label: "Desktop App", href: "/#desktop" },
-  { label: "Research", href: "/#research" },
 ];
 
 const GITHUB_URL = "https://github.com/ishworrsubedii/SitBlinkSip";
@@ -71,22 +70,22 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <Link
-            href="/dashboard"
+            href="/#desktop"
             className="hidden shrink-0 items-center gap-1.5 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-blue-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 lg:inline-flex"
           >
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
+            <Download className="h-4 w-4" />
+            Download
           </Link>
 
           {/* Mobile trigger */}
           <div className="flex items-center gap-2 lg:hidden">
             <Link
-              href="/dashboard"
-              aria-label="Open Dashboard"
+              href="/#desktop"
+              aria-label="Download SitBlinkSip Desktop"
               className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
             >
-              <LayoutDashboard className="h-4 w-4" />
-              <span className="hidden sm:inline">Dashboard</span>
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Download</span>
             </Link>
             <Sheet open={open} onOpenChange={setOpen}>
               <button
@@ -134,11 +133,11 @@ export default function Header() {
                 <div className="mt-6 border-t border-gray-100 pt-6">
                   <SheetClose asChild>
                     <Link
-                      href="/dashboard"
+                      href="/#desktop"
                       className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
                     >
-                      <LayoutDashboard className="h-5 w-5" />
-                      Open Dashboard
+                      <Download className="h-5 w-5" />
+                      Download for your OS
                     </Link>
                   </SheetClose>
                 </div>

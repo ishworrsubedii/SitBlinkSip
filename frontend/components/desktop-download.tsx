@@ -80,13 +80,13 @@ export default function DesktopDownload() {
               Desktop App
             </div>
             <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">
-              No dashboard tab. No server. Just the tray icon.
+              No browser tab. No server. Just the tray icon.
             </h2>
             <p className="mt-4 text-lg text-slate-600">
-              SitBlinkSip Desktop is the same posture, blink, and water
-              detection as the web dashboard, packaged as one native app that
-              runs quietly in the background — nothing to host, nothing to
-              keep open.
+              SitBlinkSip Desktop watches your posture, blink rate, and water
+              breaks locally through your webcam, packaged as one native app
+              that runs quietly in the background — nothing to host, nothing
+              to keep open.
             </p>
           </div>
 
