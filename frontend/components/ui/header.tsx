@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Logo from "./logo";
 import { Menu, Github, Download } from "lucide-react";
@@ -23,20 +23,33 @@ const GITHUB_URL = "https://github.com/ishworrsubedii/SitBlinkSip";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <header className="fixed top-2 z-40 w-full md:top-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="relative flex h-14 items-center justify-between gap-3 rounded-2xl bg-white/90 px-3 shadow-lg shadow-black/[0.03] backdrop-blur-sm before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(theme(colors.gray.100),theme(colors.gray.200))_border-box] before:[mask-composite:exclude_!important] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)]">
-          <div className="flex shrink-0 items-center gap-3">
+        <div
+          className={`relative flex h-16 items-center justify-between gap-3 rounded-2xl border px-4 backdrop-blur-md transition-all duration-300 ${
+            scrolled
+              ? "border-gray-200/80 bg-white/95 shadow-[0_8px_30px_-12px_rgba(15,23,42,0.18)]"
+              : "border-white/60 bg-white/80 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+          }`}
+        >
+          <div className="flex shrink-0 items-center gap-2.5">
             <Logo />
             <Link
               href="/"
-              className="font-display text-lg font-black tracking-tight sm:text-xl"
+              className="font-display text-lg tracking-tight sm:text-xl"
             >
-              <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent">
-                Sit<span className="font-extrabold">Blink</span>
-                <span className="font-bold text-blue-400">Sip</span>
+              <span className="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text font-extrabold text-transparent">
+                SitBlinkSip
               </span>
             </Link>
           </div>
@@ -48,34 +61,34 @@ export default function Header() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="rounded-full px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    className="rounded-full px-3.5 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   >
                     {link.label}
                   </Link>
                 </li>
               ))}
-              <li>
-                <a
-                  href={GITHUB_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                >
-                  <Github className="h-4 w-4" />
-                  GitHub
-                </a>
-              </li>
             </ul>
           </nav>
 
-          {/* Desktop CTA */}
-          <Link
-            href="/#desktop"
-            className="hidden shrink-0 items-center gap-1.5 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-blue-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 lg:inline-flex"
-          >
-            <Download className="h-4 w-4" />
-            Download
-          </Link>
+          {/* Desktop actions */}
+          <div className="hidden shrink-0 items-center gap-2 lg:flex">
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-full border border-gray-200 px-3.5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            >
+              <Github className="h-4 w-4" />
+              GitHub
+            </a>
+            <Link
+              href="/#desktop"
+              className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:translate-y-0"
+            >
+              <Download className="h-4 w-4" />
+              Download
+            </Link>
+          </div>
 
           {/* Mobile trigger */}
           <div className="flex items-center gap-2 lg:hidden">
@@ -102,7 +115,7 @@ export default function Header() {
               >
                 <SheetHeader>
                   <SheetTitle>
-                    <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text font-extrabold text-transparent">
                       SitBlinkSip
                     </span>
                   </SheetTitle>

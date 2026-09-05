@@ -1,11 +1,74 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import PageIllustration from "@/components/page-illustration";
 import { Armchair, Eye, Droplets, Github, Download, Circle } from "lucide-react";
 
 const GITHUB_URL = "https://github.com/ishworrsubedii/desktop-sitblinksip";
 
+// One entry per thing SitBlinkSip watches. `active` is the array index the
+// mock is currently dramatizing — cycled on an interval below to show what
+// actually happens after you open the app: it sits quietly until one metric
+// slips, then nudges you and goes back to watching.
+const SCENES = [
+  {
+    key: "posture",
+    icon: Armchair,
+    label: "Posture",
+    chip: "bg-blue-50",
+    tint: "text-blue-600",
+    ring: "ring-blue-200",
+    barColor: "bg-blue-500",
+    normal: { value: "Good posture", bar: "86%" },
+    alert: { value: "Slouching — alerting", bar: "34%" },
+    toast: "Sit up straight 🧍",
+  },
+  {
+    key: "blink",
+    icon: Eye,
+    label: "Blink rate",
+    chip: "bg-violet-50",
+    tint: "text-violet-600",
+    ring: "ring-violet-200",
+    barColor: "bg-violet-500",
+    normal: { value: "15 / min", bar: "70%" },
+    alert: { value: "6 / min — nudging", bar: "22%" },
+    toast: "Time to blink 👀",
+  },
+  {
+    key: "water",
+    icon: Droplets,
+    label: "Next water break",
+    chip: "bg-cyan-50",
+    tint: "text-cyan-600",
+    ring: "ring-cyan-200",
+    barColor: "bg-cyan-500",
+    normal: { value: "in 12 min", bar: "45%" },
+    alert: { value: "due now", bar: "100%" },
+    toast: "Water break time 💧",
+  },
+];
+
+const SCENE_MS = 3200;
+
 export default function HeroHome() {
+  // -1 = the resting "everything's fine" state shown right after the mock
+  // mounts, before the first simulated nudge. Never revisited afterwards -
+  // the cycle then loops through the three scenes indefinitely.
+  const [active, setActive] = useState(-1);
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    const id = setInterval(() => {
+      setActive((i) => (i + 1) % SCENES.length);
+    }, SCENE_MS);
+    return () => clearInterval(id);
+  }, [reduceMotion]);
+
+  const scene = active >= 0 ? SCENES[active] : null;
+
   return (
     <section className="relative" aria-label="Main Hero Section">
       <PageIllustration />
@@ -117,57 +180,66 @@ export default function HeroHome() {
                     </span>
                   </div>
 
-                  <div className="rounded-xl border border-gray-100 bg-white p-3 shadow-sm">
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-                        <Armchair className="h-4 w-4 text-blue-600" />
+                  {SCENES.map((row) => {
+                    const isActive = row.key === scene?.key;
+                    const state = isActive ? row.alert : row.normal;
+                    return (
+                      <div
+                        key={row.key}
+                        className={`rounded-xl border bg-white p-3 shadow-sm transition-shadow duration-300 ${
+                          isActive ? `border-transparent ring-2 ${row.ring}` : "border-gray-100"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${row.chip}`}>
+                            <row.icon className={`h-4 w-4 ${row.tint}`} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs text-slate-500">{row.label}</div>
+                            <AnimatePresence mode="wait">
+                              <motion.div
+                                key={state.value}
+                                initial={reduceMotion ? undefined : { opacity: 0, y: 4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={reduceMotion ? undefined : { opacity: 0, y: -4 }}
+                                transition={{ duration: 0.25 }}
+                                className="text-sm font-semibold text-slate-800"
+                              >
+                                {state.value}
+                              </motion.div>
+                            </AnimatePresence>
+                          </div>
+                          <div className="h-2 w-16 overflow-hidden rounded-full bg-gray-100">
+                            <motion.div
+                              className={`h-full rounded-full ${row.barColor}`}
+                              animate={{ width: state.bar }}
+                              transition={{ duration: 0.4 }}
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-xs text-slate-500">Posture</div>
-                        <div className="text-sm font-semibold text-slate-800">Good posture</div>
-                      </div>
-                      <div className="h-2 w-16 overflow-hidden rounded-full bg-gray-100">
-                        <div className="h-full w-[86%] rounded-full bg-blue-500" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-gray-100 bg-white p-3 shadow-sm">
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-50">
-                        <Eye className="h-4 w-4 text-violet-600" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-xs text-slate-500">Blink rate</div>
-                        <div className="text-sm font-semibold text-slate-800">15 / min</div>
-                      </div>
-                      <div className="h-2 w-16 overflow-hidden rounded-full bg-gray-100">
-                        <div className="h-full w-[70%] rounded-full bg-violet-500" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-gray-100 bg-white p-3 shadow-sm">
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-50">
-                        <Droplets className="h-4 w-4 text-cyan-600" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-xs text-slate-500">Next water break</div>
-                        <div className="text-sm font-semibold text-slate-800">in 12 min</div>
-                      </div>
-                      <div className="h-2 w-16 overflow-hidden rounded-full bg-gray-100">
-                        <div className="h-full w-[45%] rounded-full bg-cyan-500" />
-                      </div>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Floating reminder toast */}
-              <div className="absolute -bottom-5 -left-4 hidden animate-float items-center gap-2 rounded-xl border border-gray-100 bg-white px-3 py-2 shadow-lg sm:flex motion-reduce:animate-none">
-                <Eye className="h-4 w-4 text-violet-600" />
-                <span className="text-xs font-medium text-slate-700">Time to blink 👀</span>
+              <div className="absolute -bottom-5 -left-4 hidden sm:flex">
+                <AnimatePresence mode="wait">
+                  {scene && (
+                    <motion.div
+                      key={scene.key}
+                      initial={reduceMotion ? undefined : { opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={reduceMotion ? undefined : { opacity: 0, y: -10 }}
+                      transition={{ duration: 0.35 }}
+                      className="flex items-center gap-2 rounded-xl border border-gray-100 bg-white px-3 py-2 shadow-lg"
+                    >
+                      <scene.icon className={`h-4 w-4 ${scene.tint}`} />
+                      <span className="text-xs font-medium text-slate-700">{scene.toast}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
