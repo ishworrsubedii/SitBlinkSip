@@ -1,11 +1,13 @@
-import { Github, Star, GitFork, ScanEye } from "lucide-react";
+import { Github, Star, GitFork, Linkedin, Twitter, Globe, Mail } from "lucide-react";
 
 const GITHUB_URL = "https://github.com/ishworrsubedii/SitBlinkSip";
 
-const highlights = [
-  "Explore the full computer-vision and API implementation.",
-  "Learn how posture, blink, and hydration detection actually work.",
-  "Open issues, suggest features, or submit a pull request.",
+const socials = [
+  { label: "GitHub", href: "https://github.com/ishworrsubedii", icon: Github },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/ishworrsubedii/", icon: Linkedin },
+  { label: "X / Twitter", href: "https://x.com/ishworr_", icon: Twitter },
+  { label: "Portfolio", href: "https://ishwor-subedi.com.np/", icon: Globe },
+  { label: "Email", href: "mailto:ishworr.subedi@gmail.com", icon: Mail },
 ];
 
 const techStack = [
@@ -42,30 +44,21 @@ export default function OpenSource() {
               Built in public. Built for developers.
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-slate-300">
-              SitBlinkSip is fully open source. Anyone can read the code,
-              understand how the monitoring works, learn from it, or help
-              make it better.
+              SitBlinkSip is fully open source, Apache-2.0 licensed. Read the
+              code, learn how the monitoring works, or send a pull request.
             </p>
-            <ul className="mt-6 space-y-3">
-              {highlights.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm text-slate-300">
-                  <ScanEye className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
-                  {item}
-                </li>
-              ))}
-            </ul>
 
             <a
               href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-semibold text-slate-900 shadow-sm transition-all hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-semibold text-slate-900 shadow-sm transition-all hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
             >
               <Github className="h-4 w-4" />
               Star on GitHub
             </a>
 
-            <div className="mt-10 flex flex-wrap gap-2">
+            <div className="mt-8 flex flex-wrap gap-2">
               {techStack.map((tech) => (
                 <span
                   key={tech}
@@ -74,6 +67,31 @@ export default function OpenSource() {
                   {tech}
                 </span>
               ))}
+            </div>
+
+            <div className="mt-10 flex items-center gap-3 border-t border-white/10 pt-6">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-blue-400 text-xs font-bold text-white">
+                IS
+              </div>
+              <div className="text-sm text-slate-400">
+                <span className="font-semibold text-white">Ishwor Subedi</span>
+                {" "}&middot; Machine Learning Engineer, built solo
+              </div>
+              <div className="ml-auto flex gap-1.5">
+                {socials.map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target={social.href.startsWith("mailto:") ? undefined : "_blank"}
+                    rel={social.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                    aria-label={social.label}
+                    title={social.label}
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-400 transition-colors hover:border-blue-400/40 hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  >
+                    <social.icon className="h-3.5 w-3.5" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
 
