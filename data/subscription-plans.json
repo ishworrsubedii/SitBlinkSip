@@ -1,0 +1,67 @@
+{
+  "plans": [
+    {
+      "id": "basic",
+      "name": "Basic Care",
+      "price": 10,
+      "billingPeriod": "month",
+      "features": [
+        "Basic posture monitoring",
+        "Eye blink tracking",
+        "Basic break reminders"
+      ],
+      "buttonText": "Get Started",
+      "isPopular": false,
+      "metadata": {
+        "maxUsers": 1,
+        "storageLimit": "5GB",
+        "supportLevel": "community"
+      }
+    },
+    {
+      "id": "pro",
+      "name": "Pro Health",
+      "price": 25,
+      "billingPeriod": "month",
+      "features": [
+        "Advanced posture analysis",
+        "Comprehensive eye health tracking",
+        "Smart break scheduling",
+        "Workspace optimization tips",
+        "Weekly health insights",
+        "Priority support"
+      ],
+      "buttonText": "Get Started",
+      "isPopular": true,
+      "metadata": {
+        "maxUsers": 1,
+        "storageLimit": "20GB",
+        "supportLevel": "priority"
+      }
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise",
+      "price": 30,
+      "billingPeriod": "month",
+      "features": [
+        "Everything in Pro",
+        "Team analytics dashboard",
+        "Custom integration options",
+        "Dedicated support"
+      ],
+      "buttonText": "Contact Sales",
+      "isPopular": false,
+      "metadata": {
+        "maxUsers": "unlimited",
+        "storageLimit": "100GB",
+        "supportLevel": "dedicated"
+      }
+    }
+  ],
+  "metadata": {
+    "lastUpdated": "2024-03-20",
+    "currency": "USD",
+    "version": "1.0.0"
+  }
+} 

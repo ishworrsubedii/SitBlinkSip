@@ -1,6 +1,8 @@
 # Open Source Guidelines
 
-Thank you for your interest in contributing to SitBlinkSip! We welcome contributions that help improve the app and address any issues.
+Thank you for your interest in contributing to SitBlinkSip! This repository holds the marketing site
+for [SitBlinkSip Desktop](https://github.com/ishworrsubedii/desktop-sitblinksip) — a Next.js app with
+no backend. We welcome contributions that help improve the site and address any issues.
 
 ## How to Contribute
 
@@ -11,24 +13,43 @@ Thank you for your interest in contributing to SitBlinkSip! We welcome contribut
 ### Contribution Guidelines
 
 - **Code Style**: Follow consistent formatting and style based on the project's established practices.
-- **Testing**: Ensure all new features or bug fixes are tested thoroughly. Include relevant test cases in the PR.
+- **Testing**: Verify `npm run build` succeeds and manually check affected pages in the browser.
 - **Issue Reporting**: If you encounter a bug, please report it using the issue tracker with detailed steps to reproduce.
 
 ## Setup Instructions
 
-1. **Clone the Repository**:
+1. **Clone the repository**:
 
-2. **Install Dependencies**:
+   ```bash
+   git clone https://github.com/ishworrsubedii/SitBlinkSip.git
+   cd SitBlinkSip
+   ```
 
-3. **Run the Application**:
+2. **Install dependencies**:
 
+   ```bash
+   npm install
+   ```
 
-4. **Test**: Ensure that all functionalities work as expected by running unit tests or manual testing.
+3. **Run the app**:
 
+   ```bash
+   npm run dev
+   ```
+
+   Then open [http://localhost:3000](http://localhost:3000).
+
+4. **Before opening a PR**, make sure a production build passes:
+
+   ```bash
+   npm run build
+   ```
+
+Looking to work on the desktop app itself (posture/blink detection)? That code lives in the separate
+[desktop-sitblinksip](https://github.com/ishworrsubedii/desktop-sitblinksip) repository.
 
 Thank you for contributing to SitBlinkSip!
 
 [README](./README.md)
 
 ---
-
